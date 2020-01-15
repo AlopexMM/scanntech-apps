@@ -124,6 +124,9 @@ excel.insert(loc=prefix_monto_percibido,column="montoPercibido",value=(excel.Tot
 # Creamos un data frame que contenga solo las alicuotas qeu se pueden presentar
 excel_reporte = excel[excel.alicuota > 0.0]
 
+# Esto lo hago para corregir el nro del index, ya que el filtro anterior me quito algunas lineas
+excel_reporte.reset_index(inplace=True)
+
 datos_reportes = {
     "cuit": cuitMod(excel_reporte["Nro.Documento"]),
     "fechaPercepcion": arreglo_fecha(fechas=excel_reporte["Fecha"]),
@@ -137,21 +140,22 @@ datos_reportes = {
 }
 
 reporte = pd.DataFrame(data=datos_reportes)
-print(reporte)
-reporte_txt = []
+reporte_arba = []
 
-# for x in range(len(reporte["cuit"])):
-#     reporte_txt.append(
-#         reporte["cuit"][x] +
-#         reporte["fechaPercepcion"][x] +
-#         reporte["tipoComprobante"][x] +
-#         reporte["letraComprobante"][x] +
-#         reporte["numeroSucursal"][x] +
-#         reporte["numeroEmision"][x] +
-#         reporte["montoImponible"][x] +
-#         reporte["importePercepcion"][x] +
-#         reporte["tipoOperacion"][x] + "\r\n")
+#print(reporte.head(10))
 
-# escribir_reporte(reporte_txt,arba=True)
-#print(reporte_txt)
+for x in range(reporte["cuit"].count()):
+    y = (reporte["cuit"][x] +
+        reporte["fechaPercepcion"][x] +
+        reporte["tipoComprobante"][x] +
+        reporte["letraComprobante"][x] +
+        reporte["numeroSucursal"][x] +
+        reporte["numeroEmision"][x] +
+        reporte["montoImponible"][x] +
+        reporte["importePercepcion"][x] +
+        reporte["tipoOperacion"][x])
+    reporte_arba.append( y + "\r\n")
+
+escribir_reporte(reporte_arba,arba=True)
+#print(reporte_arba)
 
