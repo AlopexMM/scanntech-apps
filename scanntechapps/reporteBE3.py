@@ -5,9 +5,10 @@
 # Termina quedando un reporte del listado de clientes de base uno, dos y tres
 
 import pandas as pd
-from os import path
+import os
 
-path = "/home/mario/Descargas/kreporter.csv"
+home = os.environ["HOME"]
+path = home + "/scanntech-apps/docs/kreporter.csv"
 
 csv = pd.read_csv(path,sep=",", encoding="latin-1",dtype={"Num. de cliente":str})
 
@@ -49,19 +50,19 @@ csv.insert(loc=0,
 csv.drop("num_cliente",axis="columns",inplace=True)
 
 # Filtro para clientes de base 1
-csv_base3 = csv[((csv.numcliente >= 10000) & (csv.numcliente <= 10499)) & ((csv.status == "Instalado") | (csv.status == "Corte_Admin_Caja"))]
-csv_base3 = csv_base3["numcliente"].drop_duplicates(keep="first")
+csv_base1 = csv[((csv.numcliente >= 10000) & (csv.numcliente <= 10499)) & ((csv.status == "Instalado") | (csv.status == "Corte_Admin_Caja"))]
+csv_base1 = csv_base1["numcliente"].drop_duplicates(keep="first")
 
 # Filtro para clientes de base 2
 csv_base2 = csv[((csv.numcliente >= 10500) & (csv.numcliente <= 10999)) & ((csv.status == "Instalado") | (csv.status == "Corte_Admin_Caja"))]
-csv_base2 = csv_base3["numcliente"].drop_duplicates(keep="first")
+csv_base2 = csv_base2["numcliente"].drop_duplicates(keep="first")
 
 # Filtro para clientes de base tres
 csv_base3 = csv[((csv.numcliente >= 11000) & (csv.numcliente <= 11999)) & ((csv.status == "Instalado") | (csv.status == "Corte_Admin_Caja"))]
 csv_base3 = csv_base3["numcliente"].drop_duplicates(keep="first")
 
-csv_base1.to_csv("/home/mario/Documentos/base1.csv", encoding="latin-1", index=False,mode="w", header="Cliente")
+csv_base1.to_csv((home + "/Documentos/base1.csv"), encoding="latin-1", index=False,mode="w", header="Cliente")
 
-csv_base2.to_csv("/home/mario/Documentos/base2.csv", encoding="latin-1", index=False,mode="w", header="Cliente")
+csv_base2.to_csv((home + "/Documentos/base2.csv"), encoding="latin-1", index=False,mode="w", header="Cliente")
 
-csv_base3.to_csv("/home/mario/Documentos/base3.csv", encoding="latin-1", index=False,mode="w", header="Cliente")
+csv_base3.to_csv((home + "/Documentos/base3.csv"), encoding="latin-1", index=False,mode="w", header="Cliente")
