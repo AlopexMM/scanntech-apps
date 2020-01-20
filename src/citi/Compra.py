@@ -1,173 +1,198 @@
 # -*- coding: utf-8 -*-
-
 # Con esta clase se procesara los archivos de exportación del citi compras
 
-# Compras comprobantes
-""" "Fecha de comprobante o fecha de oficialización":[0:8]
-    "Tipo de comprobante":[8:11]
-    "Punto de venta":[11:16]
-    "Número de comprobante":[16:36]
-    "Despacho de importación":[36:52]
-    "Código de documento del vendedor":[52:54]
-    "Número de identificación del vendedor":[54:74]
-    "Apellido y nombre o denominación del vendedor":[74:104]
-    "Importe total de la operación":[104:119]
-    "Importe total de conceptos que no integran el precio neto gravado":[119:134]
-    "Importe de operaciones exentas":[134:149]
-    "Importe de percepciones o pagos a cuenta del Impuesto al Valor Agregado":[149:164]
-    "Importe de percepciones o pagos a cuenta de otros impuestos nacionales":[164:179]
-    "Importe de percepciones de Ingresos Brutos":[179:194]
-    "Importe de percepciones de Impuestos Municipales":[194:209]
-    "Importe de Impuestos Internos":[209:224]
-    "Código de moneda":[224:227]
-    "Tipo de cambio":[227:237]
-    "Cantidad de alícuotas de IVA":[237:238]
-    "Código de operación":[238:239]
-    "Crédito Fiscal Computable":[239:254]
-    "Otros Tributos":[254:269]
-    "CUIT emisor/corredor":[269:280]
-    "Denominación del emisor/corredor":[280:310]
-    "IVA comisión":[310:325]
-"""
 
-class comprobante:
+# Compras comprobantes
+
+class Comprobante:
     
     def __init__(self):
+        
         return
+
+    def diccionario_comprobante(self,dato):
+        self.dato = dato
+        self.d = {
+            "fecha_de_comprobante_o_fecha_de_oficializacion": self.dato[0:8],
+            "tipo_de_comprobante": self.dato[8:11],
+            "punto_de_venta": self.dato[11:16],
+            "numero_de_comprobante": self.dato[16:36],
+            "despacho_de_importacion": self.dato[36:52],
+            "codigo_de_documento_del_vendedor": self.dato[52:54],
+            "numero_de_identificacion_del_vendedor": self.dato[54:74],
+            "apellido_y_nombre_o_denominacion_del_vendedor": self.dato[74:104],
+            "importe_total_de_la_operacion": self.dato[104:119],
+            "importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado": self.dato[119:134],
+            "importe_de_operaciones_exentas": self.dato[134:149],
+            "importe_de_percepciones_o_pagos_a_cuenta_del_impuesto_al_valor_agregado":self.dato[149:164],
+            "importe_de_percepciones_o_pagos_a_cuenta_de_otros_impuestos_nacionales": self.dato[164:179],
+            "importe_de_percepciones_de_ingresos_brutos": self.dato[179:194],
+            "importe_de_percepciones_de_impuestos_municipales": self.dato[194:209],
+            "importe_de_impuestos_internos": self.dato[209:224],
+            "codigo_de_moneda": self.dato[224:227],
+            "tipo_de_cambio": self.dato[227:237],
+            "cantidad_de_alicuotas_de_iva": self.dato[237:238],
+            "codigo_de_operacion": self.dato[238:239],
+            "credito_fiscal_computable": self.dato[239:254],
+            "otros_tributos": self.dato[254:269],
+            "cuit_emisor_corredor": self.dato[269:280],
+            "denominacion_del_emisor_corredor": self.dato[280:310],
+            "iva_comision": self.dato[310:325]}
+        return self.d
     
-    @staticmethod
-    def _pdvnrofacturacbte(linea):
-        inicio = linea[0:11]
-        puntodeventa = linea[11:16]
-        nrofactura = linea[16:36]
-        final = linea[36:325]
-        try:
-           if puntodeventa == "00000":
-              puntodeventa = "00001"
-           if nrofactura == "00000000000000000000":
-               nrofactura = "00000000000000000001"
-           linea = inicio + puntodeventa + nrofactura + final
-           return linea
-        except Exception as e:
-            #TODO: log de errores
-            return
+    def construir_linea_comprobante(self,dato):
+        linea = (
+            dato["fecha_de_comprobante_o_fecha_de_oficializacion"]+
+            dato["tipo_de_comprobante"]+
+            dato["punto_de_venta"]+
+            dato["numero_de_comprobante"]+
+            dato["despacho_de_importacion"]+
+            dato["codigo_de_documento_del_vendedor"]+
+            dato["numero_de_identificacion_del_vendedor"]+
+            dato["apellido_y_nombre_o_denominacion_del_vendedor"]+
+            dato["importe_total_de_la_operacion"]+
+            dato["importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado"]+
+            dato["importe_de_operaciones_exentas"]+
+            dato["importe_de_percepciones_o_pagos_a_cuenta_del_impuesto_al_valor_agregado"]+
+            dato["importe_de_percepciones_o_pagos_a_cuenta_de_otros_impuestos_nacionales"]+
+            dato["importe_de_percepciones_de_ingresos_brutos"]+
+            dato["importe_de_percepciones_de_impuestos_municipales"]+
+            dato["importe_de_impuestos_internos"]+
+            dato["codigo_de_moneda"]+
+            dato["tipo_de_cambio"]+
+            dato["cantidad_de_alicuotas_de_iva"]+
+            dato["codigo_de_operacion"]+
+            dato["credito_fiscal_computable"]+
+            dato["otros_tributos"]+
+            dato["cuit_emisor_corredor"]+
+            dato["denominacion_del_emisor_corredor"]+
+            dato["iva_comision"])
+        return linea
+        
+    def pdv_nro_factura_cbte(self,linea):
+        linea = linea
+        if linea["punto_de_venta"] == "00000":
+            linea["punto_de_venta"] = "00001"
+        if linea["numero_de_comprobante"] == "00000000000000000000":
+            linea["numero_de_comprobante"] = "00000000000000000001"
+        return linea
 
-
-    @staticmethod
-    def _tipodecomprobante(linea):
-        inicio = linea[0:8]
-        tipocomprobante = linea[8:11]
-        cuerpo = linea[11:237]
-        cantidadalicuotas = linea[237:238]
-        final = linea[238:325]
-        if tipocomprobante == "006":
-            cantidadalicuotas = "0"
-            linea = inicio + tipocomprobante + cuerpo + cantidadalicuotas + final
+    def tipo_de_comprobante(self,linea):
+        
+        if linea["tipo_de_comprobante"] == "006":
+            linea["cantidad_de_alicuotas_de_iva"] = "0"
             return linea
-        elif tipocomprobante == "011":
-            cantidadalicuotas = "0"
-            linea = inicio + tipocomprobante + cuerpo + cantidadalicuotas + final
+        elif linea["tipo_de_comprobante"] == "011":
+            linea["cantidad_de_alicuotas_de_iva"] = "0"
             return linea
         else:
             return linea
 
-
-    @staticmethod
-    def _quitarotrosproveedorescbte(linea):
-        otrosproveedores = linea[74:104]
-        try:
-            if otrosproveedores == "OTROS PROVEEDORES             ":
+    def quitar_otros_proveedores_cbte(self,linea):
+        
+            if linea["apellido_y_nombre_o_denominacion_del_vendedor"] == "OTROS PROVEEDORES             ":
                 return None
             else:
                 return linea
-        except Exception as e:
-            #TODO: log de errores
             return
 
-    def procesar_comprobante(self, archivo):
+    def procesar_comprobante(self,archivo):
         self.archivo = archivo
         self.lista = []
-
+        
         with open(self.archivo, encoding="latin-1", mode="r") as file:
             for linea in file:
-                linea = comprobante._quitarotrosproveedorescbte(linea)
+                linea = self.diccionario_comprobante(linea)
+                linea = self.quitar_otros_proveedores_cbte(linea)
                 if linea == None:
                     continue
                 else:
-                    linea = comprobante._pdvnrofacturacbte(linea)
-                    linea = comprobante._tipodecomprobante(linea)
-                self.lista.append(linea + '\n')
+                    linea = self.pdv_nro_factura_cbte(linea)
+                    linea = self.tipo_de_comprobante(linea)
+                self.lista.append(self.construir_linea_comprobante(linea))
             return self.lista
 
 # Compras alicuotas
-""" "Tipo de comprobante":[0:3]
-    "Punto de venta":[3:8]
-    "Número de comprobante":[8:28]
-    "Código de documento del vendedor":[28:30]
-    "Número de identificación del vendedor":[30:50]
-    "Importe neto gravado":[50:65]
-    "Alícuota de IVA":[65:69]
-    "Impuesto liquidado":[69:84]
-"""
 
-class alicuota:
+# TODO Revisar toda la clase de alicuotas
+
+class Alicuota:
     def __init__(self):
         return
+
+    def diccionario_alicuota(self,dato):
+        
+        d = {
+            "tipo_de_comprobante": dato[0:3],
+            "punto_de_venta": dato[3:8],
+            "numero_de_comprobante": dato[8:28],
+            "codigo_de_documento_del_vendedor": dato[28:30],
+            "numero_de_identificacion_del_vendedor": dato[30:50],
+            "importe_neto_gravado": dato[50:65],
+            "alicuota_de_iva": dato[65:69],
+            "impuesto_liquidado": dato[69:84]}
+        return d
+    
+    def construir_linea_alicuota(self,linea):
+        l = (linea["tipo_de_comprobante"] +
+             linea["punto_de_venta"] +
+             linea["numero_de_comprobante"] +
+             linea["codigo_de_documento_del_vendedor"] +
+             linea["numero_de_identificacion_del_vendedor"] +
+             linea["importe_neto_gravado"] +
+             linea["alicuota_de_iva"] +
+             linea["impuesto_liquidado"])
+        return l
     
     # Debido a que en facturas B y C no se deben informar alicuotas se quitaran esas lineas del archivo
-
-    @staticmethod
-    def _borraralicuota(linea):
-        tipofac = linea[0:3]
-        if tipofac == "006":
+    def borrar_alicuota(self,linea):
+        
+        if linea["tipo_de_comprobante"] == "006":
             return None
-        elif tipofac == "011":
+        elif linea["tipo_de_comprobante"] == "011":
             return None
         else:
             return linea
 
-    @staticmethod
-    def _quitarotrosproveedoresali(linea):
-        docproveedor = linea[30:50]
-        if docproveedor == "00000000000000000001":
+    def quitar_otros_proveedores_ali(self,linea):
+        
+        if linea["numero_de_identificacion_del_vendedor"] == "00000000000000000001":
             return None
         else:
             return linea
 
-    @staticmethod
-    def _pdvnrofacturaali(linea):
-        inicio = linea[0:3]
-        puntodeventa = linea[3:8]
-        nrofactura = linea[8:28]
-        final = linea[28:84]
-        if puntodeventa == "00000":
-            puntodeventa = "00001"
-        if nrofactura == "00000000000000000000":
-            nrofactura = "00000000000000000001"
-        linea = inicio + puntodeventa + nrofactura + final
+    def pdv_nro_factura_ali(self,linea):
+        
+        if linea["punto_de_venta"] == "00000":
+            linea["punto_de_venta"] = "00001"
+        if linea["numero_de_comprobante"] == "00000000000000000000":
+            linea["numero_de_comprobante"] = "00000000000000000001"
         return linea
 
     def procesar_alicuota(self, archivo):
+        
         self.archivo = archivo
         self.lista = []
 
         with open (self.archivo, mode="r", encoding="latin-1") as f:
             for linea in f:
-                linea = alicuota._borraralicuota(linea)
+                linea = self.diccionario_alicuota(linea)
+                linea = self.borrar_alicuota(linea)
                 if linea == None:
                     continue
                 else:
-                    linea = alicuota._quitarotrosproveedoresali(linea)
+                    linea = self.quitar_otros_proveedores_ali(linea)
                     if linea == None:
                         continue
                     else:
-                        linea = alicuota._pdvnrofacturaali(linea)    
-                self.lista.append(linea + '\n')
+                        linea = self.pdv_nro_factura_ali(linea)    
+                self.lista.append(self.construir_linea_alicuota(linea))
         return self.lista
 
-class verificacion:
+class Verificacion(Comprobante,Alicuota):
     
     def __init__(self):
+        
         return
 
     # Funciones de la clase
@@ -175,80 +200,55 @@ class verificacion:
     def comprobacion(self, lista_cbte, lista_alicuota):
         self.lista_cbte = lista_cbte
         self.lista_alicuota = lista_alicuota
-        nueva_listacbte = []
+        nueva_lista_cbte = []
 
-
-        for linea in self.lista_cbte:
-            inicio = linea[0:8]
-            comprobante = linea[8:36]
-            importaciontipodoc = linea[36:54]
-            docproveedor = linea[54:74]
-            nombreprov = linea[74:104]
-            importetotal = linea[104:119]
-            totalnetonogravado = linea[119:134]
-            operacionesexentas = linea[134:149]
-            importeimpvaloragregado = linea[149:164]
-            impuestosnacionales = linea[164:179]
-            percepcionesiibb = linea[179:194]
-            impmunicipales = linea[194:209]
-            impint = linea[209:224]
-            codmoneda = linea[224:227]
-            tipodecambio = linea[227:237]
-            cantaliiva = linea[237:238]
-            codoperacion = linea[238:239]
-            credfiscalcomputable = linea[239:254]
-            final = linea[254:325]
-            suma_importetotal = 0
-            suma_creditofiscalcomputable = 0
+        for linea_c in self.lista_cbte:
+            linea_cbte = self.diccionario_comprobante(linea_c)
+            comprobante = (
+                linea_cbte["tipo_de_comprobante"] +
+                linea_cbte["punto_de_venta"] + 
+                linea_cbte["numero_de_comprobante"])
+            docproveedor = linea_cbte["numero_de_identificacion_del_vendedor"]
             
-            for linea1 in lista_alicuota:
-                _comprobante = linea1[0:28]
-                _tipodoc = linea1[28:30]
-                _docproveedor = linea1[30:50]
-                _importenetogavado = linea1[50:65]
-                _alicuotaiva = linea1[65:69]
-                _impuestoliquidado = linea1[69:84]
+            # Contenedores de suma
+            suma_importe_total = 0
+            suma_credito_fiscal_computable = 0
+            
+            for linea_a in lista_alicuota:
+
+                linea_alicuota = self.diccionario_alicuota(linea_a)
+                _comprobante = (linea_alicuota["tipo_de_comprobante"] +
+                                linea_alicuota["punto_de_venta"] +
+                                linea_alicuota["numero_de_comprobante"])
+                _docproveedor = linea_alicuota["numero_de_identificacion_del_vendedor"]
+                
                 if comprobante == _comprobante and docproveedor == _docproveedor:
-                    suma_creditofiscalcomputable = suma_creditofiscalcomputable + int(_impuestoliquidado)
-                    suma_importetotal = suma_importetotal + int(_importenetogavado) + int(_impuestoliquidado)
+                    suma_credito_fiscal_computable += int(
+                        linea_alicuota["importe_neto_gravado"])
+                    suma_importe_total += int(
+                        linea_alicuota["importe_neto_gravado"]) + int(linea_alicuota["impuesto_liquidado"])
             
-            suma_importetotal = (
-                suma_importetotal +
-                int(totalnetonogravado) +
-                int(operacionesexentas) +
-                int(importeimpvaloragregado) +
-                int(impuestosnacionales) +
-                int(percepcionesiibb) +
-                int(impmunicipales) +
-                int(impint)
+            suma_importe_total = (
+                suma_importe_total +
+                int(linea_cbte["importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado"]) +
+                int(linea_cbte["importe_de_operaciones_exentas"]) +
+                int(linea_cbte["importe_de_percepciones_o_pagos_a_cuenta_del_impuesto_al_valor_agregado"]) +
+                int(linea_cbte["importe_de_percepciones_o_pagos_a_cuenta_de_otros_impuestos_nacionales"]) +
+                int(linea_cbte["importe_de_percepciones_de_ingresos_brutos"]) +
+                int(linea_cbte["importe_de_percepciones_de_impuestos_municipales"]) +
+                int(linea_cbte["importe_de_impuestos_internos"])
             )
-            suma_importetotal = str(suma_importetotal)
-            suma_creditofiscalcomputable = str(suma_creditofiscalcomputable)
-            credfiscalcomputable = suma_creditofiscalcomputable.rjust(15,"0")
-            importetotal = suma_importetotal.rjust(15,"0")
+            suma_importe_total = str(suma_importe_total)
+            suma_credito_fiscal_computable = str(suma_credito_fiscal_computable)
+            
+            cred_fiscal_computable = suma_credito_fiscal_computable.rjust(15,"0")
+            linea_cbte["credito_fiscal_computable"] = cred_fiscal_computable
+            
+            importe_total = suma_importe_total.rjust(15,"0")
+            
+            linea_cbte["importe_total_de_la_operacion"] = importe_total
+            
+            nueva_lista_cbte.append(self.construir_linea_comprobante(linea_cbte))
 
-            nueva_listacbte.append(
-                inicio +
-                comprobante +
-                importaciontipodoc +
-                docproveedor +
-                nombreprov +
-                importetotal +
-                totalnetonogravado +
-                operacionesexentas +
-                importeimpvaloragregado +
-                impuestosnacionales +
-                percepcionesiibb +
-                impmunicipales +
-                impint +
-                codmoneda +
-                tipodecambio +
-                cantaliiva +
-                codoperacion +
-                credfiscalcomputable +
-                final +
-                "\n"
-            )
-
-        return nueva_listacbte
+        return nueva_lista_cbte
 

@@ -108,3 +108,36 @@ class verificaciones:
             lista.append(self.comprobantes.construir_linea_comprobante(cbte_linea))
 
         return lista
+
+    def verificar_comprobantes_cero(self, cbte, alicuotas):
+
+        lista_cbte = []
+        alicuotas_a_quitar = []
+        self.lista_alicuotas = alicuotas
+
+        for x in cbte:
+
+            cbte_linea = self.comprobantes.campos_comprobante(x)
+
+            if int(cbte_linea['importe total de la operacion']) == 0:
+                operacion = cbte_linea['tipo de comprobante'] + \
+                    cbte_linea['punto de venta'] + \
+                    cbte_linea['numero de comprobante']
+                alicuotas_a_quitar.append(operacion)
+            else:
+                lista_cbte.append(self.comprobantes.construir_linea_comprobante(cbte_linea))
+
+        for x in alicuotas:            
+            alicuota_linea = self.alicuotas.campos_alicuotas(x)
+
+            operacion_alicuota = alicuota_linea['tipo de comprobante'] + \
+                alicuota_linea['punto de venta'] + \
+                alicuota_linea['numero de comprobante']
+
+            for y in alicuotas_a_quitar:
+                if operacion_alicuota == y:
+                    print("{0} encontro este y se debe remover {1}".format(y,x))
+                    self.lista_alicuotas.remove(x)
+
+
+        return [lista_cbte, self.lista_alicuotas]
