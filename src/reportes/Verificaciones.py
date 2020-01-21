@@ -1,4 +1,4 @@
-from citi import Venta
+from reportes import Venta
 
 # Funcion que devuelve un nro unico formado por valores que se encuentran
 # en ambos reportes
@@ -136,7 +136,7 @@ class verificaciones:
 
             for y in alicuotas_a_quitar:
                 if operacion_alicuota == y:
-                    print("{0} encontro este y se debe remover {1}".format(y,x))
+                    #print("{0} encontro este y se debe remover {1}".format(y,x))
                     self.lista_alicuotas.remove(x)
 
 
