@@ -52,7 +52,9 @@ reporte = archivos('REGINFO_CV_VENTAS_CBTE.txt',
                    'REGINFO_CV_COMPRAS_ALICUOTAS.txt')
 
 ##########################
-
+# TODO UnboundLocalError cuando escriben mal el nombre del archivo
+# TODO Probar todos los casos ejecutando de desde consola
+# TODO Manejar branch de testing y desarrollo
 # Funciones que llama el parser
 def citi_ventas(args):
     exp = archivo_path(args.exportacion)
