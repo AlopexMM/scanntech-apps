@@ -122,7 +122,7 @@ class Arba:
         # Insertamos la columna
         excel.insert(loc=prefix_monto_percibido,column="montoPercibido",value=(excel.TotalSinIva * excel.alicuota / 100))
 
-        # Creamos un data frame que contenga solo las alicuotas qeu se pueden presentar
+        # Creamos un data frame que contenga solo las alicuotas que se pueden presentar
         excel_reporte = excel[excel.alicuota > 0.0]
 
         # Esto lo hago para corregir el nro del index, ya que el filtro anterior me quito algunas lineas

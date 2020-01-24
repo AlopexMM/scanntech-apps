@@ -10,7 +10,7 @@
 # |4 | Fecha Percepcion | Fecha |10 |SI |/|
 # |5 | Tipo de Comprobante | Texto |6 |NO||
 # |6 | Letra Comprobante | Texto |1| NO||
-# |7 | Numero Comprobante | Texto |12 |NO||
+# |7 | Numero Comprobante | Texto |4 |NO||
 # |8 | Importe Base | Numérico |15 | SI |.|
 # |9 | Alicuota | Numérico | 6 |SI |.|
 # |10| Importe Percibido | Numérico | 15 | SI| . | 
@@ -31,17 +31,31 @@
 
 import os
 import pandas as pd
+import numpy as np
 
 from time import strftime
 
-def valores_genericos(rango, valor):
-    lista = []
-    for x in range(rango):
-        lista.append(valor)
-    return lista
 
-def monto_alicuota(monto,alicuota):
-    return [x * alicuota / 100 for x in monto]
+def verificador_cuit(cuit):
+
+    # Base para la multiplicacion
+    if len(cuit) == 11:
+        if cuit != "11111111113":
+            base = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2]
+            aux = 0
+            for i in range(10):
+                aux += int(cuit[i]) * base[i]
+            aux = 11 - (aux % 11)
+            if aux == 11:
+                aux = 0
+            elif aux == 10:
+                aux = 9
+            if int(cuit[10]) == aux:
+                return True
+            else:
+                return False
+    else:
+        return False
 
 def arreglo_fecha(fechas):
     lista = []
@@ -54,7 +68,7 @@ def pasar_string(datos,fill=None,decimal=None):
     if decimal:
         for x in datos:
             x = format(x,".2f")
-            lista.append(str(x).replace(".",",").zfill(fill))
+            lista.append(str(x).zfill(fill))
     elif decimal == False:
         for x in datos:
             x = str(x).split(".")
@@ -79,42 +93,62 @@ class Ater:
     def correr_reporte(self):
     
         excel = pd.read_excel(self.excel_file, header=2 , skipfooter=15, convert_float=False)
-        cant_rows = excel["Fecha"].count()
 
-        # Calculamos los datos necesarios para la formación del dataframe final de la exportación
-        # primer valor 016
-        # Linea de ejemplo:
-        # 1612095500069302/12/2019     FA000100006265000000000637,18003,00000000000019,1200
+        # Insertamos una columna que contenga el importe base,tipo agente, tipo comprobante, alicuota, importe percibido y contibuyente convenio multilateral
+        prefix_general = excel.columns.get_loc("Total")
+        excel.insert(loc=prefix_general,column="montoBase",value=(excel["Total"]-excel["IVA"]))
+        excel.insert(loc=prefix_general,column="tipoAgente",value="1")
+        excel.insert(loc=prefix_general,column="tipoComprobante",value=np.nan)
+        excel.insert(loc=prefix_general,column="alicuota",value="003.00")
+        excel.insert(loc=prefix_general,column="importePercibido",value=(excel["montoBase"]*0.03))
+        excel.insert(loc=prefix_general,column="convMultiLateral",value="00")
+        excel.insert(loc=prefix_general,column="motivo",value="194")
+        
+        # Completamos las celdas vacias de tipo factura
+        excel["Tipo de Factura"].fillna("A", inplace=True)
 
-        tipo_agente = valores_genericos(cant_rows,"016")
-        tipo_comprobante = valores_genericos(cant_rows,"     F")
-        importe_base = excel["Total"]-excel["IVA"]
-        alicuota = valores_genericos(cant_rows,"003,00")
-        importe_percibido = monto_alicuota((excel["Total"]-excel["IVA"]), 3)
-        contribuyente_conv_multilat = valores_genericos(cant_rows,"00")
+        # Si las facturas son positivas se cambia NaN por TF
+        values = excel["tipoComprobante"][excel.montoBase > 0]
+        values.fillna("TF    ",inplace=True)
+        excel.tipoComprobante.fillna(value=values,inplace=True)
+        
+        # Si la factura son negativas se cambia NaN por C
+        values = excel["tipoComprobante"][excel.montoBase < 0]
+        values.fillna("C     ",inplace=True)
+        excel.tipoComprobante.fillna(value=values,inplace=True)
 
+        # Campos de las columnas que no sirven mas luego de procesar el archivo
+        columnas_quitar = ["Fecha Operación", "Documento",
+                           "Total", "IVA", "Cajero", "Cliente"]
 
-        d = {"tipo_agente":tipo_agente,
-             "cuit":pasar_string(excel["Nro.Documento"]),
-             "fecha_percepcion":arreglo_fecha(excel["Fecha"]),
-             "tipo_comprobante":tipo_comprobante,
-             "letra_comprobante":excel["Tipo de Factura"],
-             "punto_de_venta":pasar_string(excel["Registradora"],fill=4,decimal=False),
-             "numero_comprobante":pasar_string(excel["Nro.Operación"],fill=8,decimal=False),
-             "importe_base":pasar_string(importe_base,fill=15,decimal=True),
-             "alicuota":alicuota,
-             "importe_percibido":pasar_string(importe_percibido,fill=15,decimal=True),
-             "contibuyente_conv_multi":contribuyente_conv_multilat}
+        # Quitamos las columnas que no sirven
+        excel.drop(columnas_quitar,axis="columns",inplace=True)
+        
+        # Nos quedamos con lineas validas para reportar
+        excel_reporte = excel[excel.montoBase != 0]
+        excel_reporte.reset_index(inplace=True)
+        
+        d = {"tipo_agente":excel_reporte.tipoAgente,
+             "motivo":excel_reporte.motivo,
+             "cuit":pasar_string(excel_reporte["Nro.Documento"]),
+             "fecha_percepcion":arreglo_fecha(excel_reporte["Fecha"]),
+             "tipo_comprobante":excel_reporte.tipoComprobante,
+             "letra_comprobante":excel_reporte["Tipo de Factura"],
+             "punto_de_venta":pasar_string(excel_reporte["Registradora"],fill=4,decimal=False),
+             "numero_comprobante":pasar_string(excel_reporte["Nro.Operación"],fill=8,decimal=False),
+             "importe_base":pasar_string(excel_reporte.montoBase,fill=15,decimal=True),
+             "alicuota":excel_reporte.alicuota,
+             "importe_percibido":pasar_string(excel_reporte.importePercibido,fill=15,decimal=True),
+             "contibuyente_conv_multi":excel_reporte.convMultiLateral}
 
         df = pd.DataFrame(data=d)
-        df["letra_comprobante"].fillna("A",inplace=True)
-        #df.to_csv("prueba.csv",index=False)
-
-
+        
         reporte_ater = []
-        for x in range(cant_rows):
-            if df["cuit"][x] != "0" and df["cuit"][x] != "11111111113":
+        for x in range(df["cuit"].count()):
+            cuit_valido = verificador_cuit(df["cuit"][x])
+            if cuit_valido:
                 y = (df["tipo_agente"][x]+
+                    df["motivo"][x]+
                     df["cuit"][x]+
                     df["fecha_percepcion"][x]+
                     df["tipo_comprobante"][x]+
@@ -125,7 +159,7 @@ class Ater:
                     df["alicuota"][x]+
                     df["importe_percibido"][x]+
                     df["contibuyente_conv_multi"][x])
-            reporte_ater.append(y+"\r\n")
+                reporte_ater.append(y+"\r\n")
 
 
         escribir_reporte(reporte_ater,self.directorio_trabajo)

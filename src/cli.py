@@ -86,6 +86,8 @@ def citi_ventas(args):
             directorio_ejecucion, record_copy(archivo_txt=os.path.join(directorio_ejecucion, reporte.venta_alicuota), lista=lista_alicuotas)))
     
     grabar_zip(archivos_, directorio_ejecucion)
+    for file_ in archivos_:
+        os.remove(file_)
 
 def citi_compras(args):
     exp = archivo_path(args.exportacion)
@@ -117,6 +119,8 @@ def citi_compras(args):
             directorio_ejecucion,record_copy(archivo_txt=os.path.join(directorio_ejecucion, reporte.compra_alicuota), lista=lista_alicuota)))
     
     grabar_zip(archivos_,directorio_ejecucion)
+    for file_ in archivos_: 
+        os.remove(file_)
 
 def arba(args):
     excel_ = archivo_path(args.excel)
@@ -137,6 +141,7 @@ def arba(args):
     os.rename(excel_1,excel_2)
     arba = Arba.Arba(excel_archivo=excel_2, padron_archivo=padron_)
     arba.correr_reporte()
+    os.remove(excel_2)
 
 def ater(args):
     excel_ = archivo_path(args.excel)
@@ -156,6 +161,7 @@ def ater(args):
     os.rename(excel_1,excel_2)
     ater = Ater.Ater(excel_archivo=excel_2)
     ater.correr_reporte()
+    os.remove(excel_2)
 
 # Creamos el parser de los argumentos
 parser = argparse.ArgumentParser()
@@ -189,4 +195,5 @@ ater_.add_argument('excel', type=str,
 ater_.set_defaults(func=ater)
 
 args = parser.parse_args(
+    ("ater excel=/home/alopexmm/scanntech/10139/Tickets+de+Clientes+con+Factura+y+Percepcin_2020_01_23-14_01_54.zip").split())
 args.func(args)
