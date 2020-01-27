@@ -1,3 +1,0 @@
-import module_cli.cli
-
-module_cli.cli.start()
