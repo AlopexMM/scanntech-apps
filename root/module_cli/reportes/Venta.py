@@ -1,4 +1,4 @@
-# -*- coding: utf-8 -*-
+# -*- coding: latin-1 -*-
 
 ''' En esta clase se puede encontrar las funciones que modifican el archivo de 
 comprobantes'''

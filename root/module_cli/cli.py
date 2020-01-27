@@ -3,6 +3,7 @@
 
 import argparse
 import os
+import sys
 
 from reportes import Venta, Compra, Verificaciones, Arba, Ater
 from collections import namedtuple
@@ -26,20 +27,46 @@ def record_copy(lista, archivo_txt):
                 f.write(line + '\n')
         return (p[0] + '_PROCESADO.txt')
 
-def zip_exctract(archivos, zip_, dir_):
-    try:
-        if is_zipfile(zip_):
-            with ZipFile(zip_) as zp:
-                for archivo in archivos: zp.extract(archivo,dir_)
-        else:
-            "El archivo no es un zip"
-    except ValueError:
-        print("No se encuentran los archivos de ventas dentro del zip")
 
+def zip_exctract(zip_, dir_, archivos_=None):
+    if archivos_ == None: # Para reporte ARBA y ATER
+        try:
+            if is_zipfile(zip_):
+                with ZipFile(zip_, mode="r") as zf:
+                    arch = zf.namelist()
+                    arch1 = arch[0]
+                    arch1 = arch1.replace(" ", "+")
+                    zf.extract(arch[0], dir_)
+            else:
+                sys.exit("No existe el archivo zip {}".format(zip_))
+        except ValueError:
+            print("No hay archivos dentro del zip")
+        except UnboundLocalError:
+            print("El nombre del archivo es incorrecto")
+
+        excel_1 = os.path.join(dir_, arch[0])
+        excel_2 = os.path.join(dir_, arch1)
+        os.rename(excel_1, excel_2)
+        return excel_2
+    
+    else:
+        try:
+            if is_zipfile(zip_):
+                with ZipFile(zip_) as zp:
+                    for archivo in archivos_: zp.extract(archivo,dir_)
+            else:
+                sys.exit("No existe el archivo zip {}".format(zip_))
+        except ValueError:
+            print("No se encuentran los archivos de ventas dentro del zip")
 
 def archivo_path(parametro):
     path_ = parametro.split("=")
     return path_[1]
+
+def remover_archivos(files_):
+    for file_ in files_:
+        os.remove(file_)
+
 # Programa
 
 # Preparamos el entorno
@@ -52,15 +79,14 @@ reporte = archivos('REGINFO_CV_VENTAS_CBTE.txt',
                    'REGINFO_CV_COMPRAS_ALICUOTAS.txt')
 
 ##########################
-# TODO UnboundLocalError cuando escriben mal el nombre del archivo
 # TODO Probar todos los casos ejecutando de desde consola
-# TODO Manejar branch de testing y desarrollo
+
 # Funciones que llama el parser
 def citi_ventas(args):
     exp = archivo_path(args.exportacion)
-    directorio_ejecucion = os.path.dirname(exp)
+    directorio_ejecucion = os.path.dirname(os.path.abspath(exp))
     
-    zip_exctract((reporte.venta_cbte,reporte.venta_alicuota),exp,directorio_ejecucion)
+    zip_exctract(archivos_=(reporte.venta_cbte,reporte.venta_alicuota),zip_=exp,dir_=directorio_ejecucion)
     
     cbte = Venta.comprobante()
     alicuota = Venta.alicuota()
@@ -88,14 +114,20 @@ def citi_ventas(args):
             directorio_ejecucion, record_copy(archivo_txt=os.path.join(directorio_ejecucion, reporte.venta_alicuota), lista=lista_alicuotas)))
     
     grabar_zip(archivos_, directorio_ejecucion)
-    for file_ in archivos_:
-        os.remove(file_)
+    
+    # Se suman estos dos archivos para eliminar
+    archivos_.append(os.path.join(directorio_ejecucion, reporte.venta_cbte))
+    archivos_.append(os.path.join(
+        directorio_ejecucion, reporte.venta_alicuota))
+
+    remover_archivos(archivos_)
 
 def citi_compras(args):
     exp = archivo_path(args.exportacion)
-    directorio_ejecucion = os.path.dirname(exp)
+    directorio_ejecucion = os.path.dirname(os.path.abspath(exp))
     
-    zip_exctract((reporte.compra_cbte,reporte.compra_alicuota),exp,directorio_ejecucion)
+    zip_exctract(archivos_=(reporte.compra_cbte, reporte.compra_alicuota),
+                     zip_=exp, dir_=directorio_ejecucion)
     
     cbte = Compra.Comprobante()
     alicuota = Compra.Alicuota()
@@ -119,51 +151,36 @@ def citi_compras(args):
     archivos_.append(
         os.path.join(
             directorio_ejecucion,record_copy(archivo_txt=os.path.join(directorio_ejecucion, reporte.compra_alicuota), lista=lista_alicuota)))
-    
+
     grabar_zip(archivos_,directorio_ejecucion)
-    for file_ in archivos_: 
-        os.remove(file_)
+
+    # Se suman estos dos archivos para eliminar
+    archivos_.append(os.path.join(directorio_ejecucion, reporte.compra_cbte))
+    archivos_.append(os.path.join(
+        directorio_ejecucion, reporte.compra_alicuota))
+    
+    remover_archivos(archivos_)
 
 def arba(args):
     excel_ = archivo_path(args.excel)
-    directorio_ejecucion = os.path.dirname(excel_)
+    directorio_ejecucion = os.path.dirname(os.path.abspath(excel_))
     padron_ = archivo_path(args.padron)
-    try:
-        if is_zipfile(excel_):
-            with ZipFile(excel_,mode="r") as zf:
-                arch = zf.namelist()
-                arch1 = arch[0]
-                arch1 = arch1.replace(" ", "+")
-                zf.extract(arch[0],directorio_ejecucion)
-    except ValueError:
-        print("No hay archivos dentro del zip")
     
-    excel_1 = os.path.join(directorio_ejecucion,arch[0])
-    excel_2 = os.path.join(directorio_ejecucion,arch1)
-    os.rename(excel_1,excel_2)
-    arba = Arba.Arba(excel_archivo=excel_2, padron_archivo=padron_)
+    excel = zip_exctract(zip_=excel_,dir_=directorio_ejecucion)
+    
+    arba = Arba.Arba(excel_archivo=excel, padron_archivo=padron_)
+    
     arba.correr_reporte()
-    os.remove(excel_2)
+    
+    os.remove(excel)
 
 def ater(args):
     excel_ = archivo_path(args.excel)
-    directorio_ejecucion = os.path.dirname(excel_)
-    try:
-        if is_zipfile(excel_):
-            with ZipFile(excel_,mode="r") as zf:
-                arch = zf.namelist()
-                arch1 = arch[0]
-                arch1 = arch1.replace(" ", "+")
-                zf.extract(arch[0],directorio_ejecucion)
-    except ValueError:
-        print("No hay archivos dentro del zip")
-    
-    excel_1 = os.path.join(directorio_ejecucion,arch[0])
-    excel_2 = os.path.join(directorio_ejecucion,arch1)
-    os.rename(excel_1,excel_2)
-    ater = Ater.Ater(excel_archivo=excel_2)
+    directorio_ejecucion = os.path.dirname(os.path.abspath(excel_))
+    excel = zip_exctract(zip_=excel_,dir_=directorio_ejecucion)
+    ater = Ater.Ater(excel_archivo=excel)
     ater.correr_reporte()
-    os.remove(excel_2)
+    os.remove(excel)
 
 # Creamos el parser de los argumentos
 parser = argparse.ArgumentParser()
@@ -196,6 +213,5 @@ ater_.add_argument('excel', type=str,
                    help='tickets factura de clientes y percepciones')
 ater_.set_defaults(func=ater)
 
-args = parser.parse_args(
-    ("ater excel=/home/alopexmm/scanntech/10139/Tickets+de+Clientes+con+Factura+y+Percepcin_2020_01_23-14_01_54.zip").split())
+args = parser.parse_args()
 args.func(args)

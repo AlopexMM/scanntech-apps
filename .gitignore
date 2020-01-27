@@ -3,3 +3,5 @@ docs/
 __pycache__
 *.ipynb
 venv/
+build/
+dist/

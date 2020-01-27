@@ -102,7 +102,7 @@ class Ater:
         excel.insert(loc=prefix_general,column="alicuota",value="003.00")
         excel.insert(loc=prefix_general,column="importePercibido",value=(excel["montoBase"]*0.03))
         excel.insert(loc=prefix_general,column="convMultiLateral",value="00")
-        excel.insert(loc=prefix_general,column="motivo",value="194")
+        excel.insert(loc=prefix_general,column="motivo",value="061")
         
         # Completamos las celdas vacias de tipo factura
         excel["Tipo de Factura"].fillna("A", inplace=True)
