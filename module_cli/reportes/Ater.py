@@ -92,7 +92,8 @@ class Ater:
 
     def correr_reporte(self):
     
-        excel = pd.read_excel(self.excel_file, header=2 , skipfooter=15, convert_float=False)
+        excel = pd.read_excel(self.excel_file, header=2 , skipfooter=12, convert_float=False)
+
 
         # Insertamos una columna que contenga el importe base,tipo agente, tipo comprobante, alicuota, importe percibido y contibuyente convenio multilateral
         prefix_general = excel.columns.get_loc("Total")
