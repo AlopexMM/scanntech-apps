@@ -81,7 +81,7 @@ class Arba:
 
         # Cargamos el excel de los tickets
         tipos_datos = {"Nro.Documento":str}
-        excel = pd.read_excel(self.excel_file, header=2, skipfooter=15,convert_float=False,dtype=tipos_datos)
+        excel = pd.read_excel(self.excel_file, header=2, skipfooter=12,convert_float=False,dtype=tipos_datos)
 
         # Quitamos las columnas que no usamos en esta etapa
         columnas_quitar = ["Fecha Operación","Cliente","Cajero","Importe Retención","Documento"]
