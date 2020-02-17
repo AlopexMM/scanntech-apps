@@ -1,6 +1,6 @@
 #!/usr/bin/bash
 
-sudo apt-get -y install git python-virtualenv
+sudo apt-get -y install git python-virtualenv python3-pip virtualenv
 
 mkdir $HOME/.scanntech-apps
 
