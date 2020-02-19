@@ -1,33 +1,31 @@
-# # Datos
-# 
-# La exportacion debe contener los siguientes datos
-# 
-# | IDCampo | Concepto | Tipo | Longitud | Separador ||
-# |---------|----------|------|----------|-----------|---|
-# |1| Tipo de Agente | Numérico | 1 | NO ||
-# |2 | Motivo Movimiento | Numérico | 3 |NO||
-# |3 | CUIT del cliente/ proveedor | CUIT |11 |NO||
-# |4 | Fecha Percepcion | Fecha |10 |SI |/|
-# |5 | Tipo de Comprobante | Texto |6 |NO||
-# |6 | Letra Comprobante | Texto |1| NO||
-# |7 | Numero Comprobante | Texto |4 |NO||
-# |8 | Importe Base | Numérico |15 | SI |.|
-# |9 | Alicuota | Numérico | 6 |SI |.|
-# |10| Importe Percibido | Numérico | 15 | SI| . | 
-# |11| Anulación | Numérico | 1 | NO||
-# |12| Contribuyente Conv. Multilat. | Numérico | 1 | NO||
-# 
-# **Alicuota: 3%**
-# 
-# **Tipo de Archivo: .txt**
-# 
-# **Ejemplo de una línea del archivo de importación:**
-# 
-# 11942011111111201/06/2019F A123476789012000000000100.12002.00000000000010.0001
-# 
-# 1612095500069302/12/2019     FA000100006265000000000637,18003,00000000000019,1200
-# 
-# 
+"""Datos
+
+La exportacion debe contener los siguientes datos
+
+| IDCampo | Concepto | Tipo | Longitud | Separador ||
+|---------|----------|------|----------|-----------|---|
+|1| Tipo de Agente | Numérico | 1 | NO ||
+|2 | Motivo Movimiento | Numérico | 3 |NO||
+|3 | CUIT del cliente/ proveedor | CUIT |11 |NO||
+|4 | Fecha Percepcion | Fecha |10 |SI |/|
+|5 | Tipo de Comprobante | Texto |6 |NO||
+|6 | Letra Comprobante | Texto |1| NO||
+|7 | Numero Comprobante | Texto |4 |NO||
+|8 | Importe Base | Numérico |15 | SI |.|
+|9 | Alicuota | Numérico | 6 |SI |.|
+|10| Importe Percibido | Numérico | 15 | SI| . | 
+|11| Anulación | Numérico | 1 | NO||
+|12| Contribuyente Conv. Multilat. | Numérico | 1 | NO||
+
+**Alicuota: 3%**
+
+**Tipo de Archivo: .txt**
+
+**Ejemplo de una línea del archivo de importación:**
+
+11942011111111201/06/2019F A123476789012000000000100.12002.00000000000010.0001
+
+1612095500069302/12/2019     FA000100006265000000000637,18003,00000000000019,1200"""
 
 import os
 import pandas as pd
@@ -93,6 +91,7 @@ class Ater:
     def correr_reporte(self):
     
         excel = pd.read_excel(self.excel_file, header=2 , skipfooter=7, convert_float=False)
+        excel = excel[excel["Importe Retención"] != 0]
 
 
         # Insertamos una columna que contenga el importe base,tipo agente, tipo comprobante, alicuota, importe percibido y contibuyente convenio multilateral
