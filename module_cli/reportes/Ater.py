@@ -92,7 +92,7 @@ class Ater:
     
         excel = pd.read_excel(self.excel_file, header=2 , skipfooter=7, convert_float=False)
         excel = excel[excel["Importe Retención"] != 0]
-
+        excel = excel.fillna(1)
 
         # Insertamos una columna que contenga el importe base,tipo agente, tipo comprobante, alicuota, importe percibido y contibuyente convenio multilateral
         prefix_general = excel.columns.get_loc("Total")
