@@ -30,6 +30,7 @@ La exportacion debe contener los siguientes datos
 import os
 import pandas as pd
 import numpy as np
+from decimal import Decimal
 
 from time import strftime
 
@@ -38,20 +39,19 @@ def verificador_cuit(cuit):
 
     # Base para la multiplicacion
     if len(cuit) == 11:
-        if cuit != "11111111113":
-            base = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2]
+        base = [5, 4, 3, 2, 7, 6, 5, 4, 3, 2]
+        aux = 0
+        for i in range(10):
+            aux += int(cuit[i]) * base[i]
+        aux = 11 - (aux % 11)
+        if aux == 11:
             aux = 0
-            for i in range(10):
-                aux += int(cuit[i]) * base[i]
-            aux = 11 - (aux % 11)
-            if aux == 11:
-                aux = 0
-            elif aux == 10:
-                aux = 9
-            if int(cuit[10]) == aux:
-                return True
-            else:
-                return False
+        elif aux == 10:
+            aux = 9
+        if int(cuit[10]) == aux:
+            return True
+        else:
+            return False
     else:
         return False
 
@@ -66,7 +66,9 @@ def pasar_string(datos,fill=None,decimal=None):
     if decimal:
         for x in datos:
             x = format(x,".2f")
-            lista.append(str(x).zfill(fill))
+            x = str(x)
+            x = x.zfill(fill)
+            lista.append(x)
     elif decimal == False:
         for x in datos:
             x = str(x).split(".")
@@ -91,8 +93,9 @@ class Ater:
     def correr_reporte(self):
     
         excel = pd.read_excel(self.excel_file, header=2 , skipfooter=7, convert_float=False)
-        excel = excel[excel["Importe Retención"] != 0]
-        excel = excel.fillna(1)
+        #excel = excel[excel["Importe Retención"] != 0] # Esta linea hace que aquellos que tienen retención 0 se ignoren
+        excel = excel[excel["Nro.Documento"] != 11111111113]
+        excel.reset_index(inplace=True)
 
         # Insertamos una columna que contenga el importe base,tipo agente, tipo comprobante, alicuota, importe percibido y contibuyente convenio multilateral
         prefix_general = excel.columns.get_loc("Total")
@@ -142,10 +145,11 @@ class Ater:
              "contibuyente_conv_multi":excel_reporte.convMultiLateral}
 
         df = pd.DataFrame(data=d)
-        
+
         reporte_ater = []
         for x in range(df["cuit"].count()):
             cuit_valido = verificador_cuit(df["cuit"][x])
+
             if cuit_valido:
                 y = (df["tipo_agente"][x]+
                     df["motivo"][x]+
