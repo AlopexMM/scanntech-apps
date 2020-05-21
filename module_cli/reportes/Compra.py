@@ -172,7 +172,7 @@ class Alicuota:
     def correccion_impuesto_liquidado(self,linea):
 
         impuesto_liquidado = int(int(linea["importe_neto_gravado"]) * 0.21)
-        linea["impuesto_liquidado"] = str(impuesto_liquidado).zfil(15)
+        linea["impuesto_liquidado"] = str(impuesto_liquidado).zfill(15)
         return linea
 
     def procesar_alicuota(self, archivo):
@@ -192,7 +192,7 @@ class Alicuota:
                         continue
                     else:
                         linea = self.pdv_nro_factura_ali(linea)
-                        linea = self.correccion_impuesto_liquidado(linea)
+                linea = self.correccion_impuesto_liquidado(linea)
                 self.lista.append(self.construir_linea_alicuota(linea))
         return self.lista
 
