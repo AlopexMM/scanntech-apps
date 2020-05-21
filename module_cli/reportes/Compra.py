@@ -192,7 +192,7 @@ class Alicuota:
                         continue
                     else:
                         linea = self.pdv_nro_factura_ali(linea)
-                linea = self.correccion_impuesto_liquidado(linea)
+                
                 self.lista.append(self.construir_linea_alicuota(linea))
         return self.lista
 
@@ -222,8 +222,9 @@ class Verificacion(Comprobante,Alicuota):
             suma_credito_fiscal_computable = 0
 
             for linea_a in lista_alicuota:
-
+                
                 linea_alicuota = self.diccionario_alicuota(linea_a)
+                linea_alicuota = self.correccion_impuesto_liquidado(linea_a)
                 _comprobante = (linea_alicuota["tipo_de_comprobante"] +
                                 linea_alicuota["punto_de_venta"] +
                                 linea_alicuota["numero_de_comprobante"])
