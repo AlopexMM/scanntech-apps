@@ -171,10 +171,29 @@ class Alicuota:
 
     def correccion_impuesto_liquidado(self,linea):
 
-        impuesto_liquidado = int(int(linea["importe_neto_gravado"]) * 0.21)
-        linea["impuesto_liquidado"] = str(impuesto_liquidado).zfill(15)
-        return linea
-
+        # Crear el calculo segun el codigo de IVA
+        if int(linea["alicuota_de_iva"]) == 3:
+            return linea
+        elif int(linea["alicuota_de_iva"]) == 4:
+            impuesto_liquidado = int(int(linea["importe_neto_gravado"]) * 0.105)
+            linea["impuesto_liquidado"] = str(impuesto_liquidado).zfill(15)
+            return linea
+        elif int(linea["alicuota_de_iva"]) == 5:
+            impuesto_liquidado = int(
+                int(linea["importe_neto_gravado"]) * 0.21)
+            linea["impuesto_liquidado"] = str(impuesto_liquidado).zfill(15)
+            return linea
+        elif int(linea["alicuota_de_iva"]) == 6:
+            impuesto_liquidado = int(
+                int(linea["importe_neto_gravado"]) * 0.27)
+            linea["impuesto_liquidado"] = str(impuesto_liquidado).zfill(15)
+            return linea
+        elif int(linea["alicuota_de_iva"]) == 9:
+            impuesto_liquidado = int(
+                int(linea["importe_neto_gravado"]) * 0.025)
+            linea["impuesto_liquidado"] = str(impuesto_liquidado).zfill(15)
+            return linea
+            
     def procesar_alicuota(self, archivo):
 
         self.archivo = archivo
