@@ -172,23 +172,23 @@ class Alicuota:
     def correccion_impuesto_liquidado(self,linea):
 
         # Crear el calculo segun el codigo de IVA
-        if int(linea["alicuota_de_iva"]) == 3:
+        if linea["alicuota_de_iva"] == "0003":
             return linea
-        elif int(linea["alicuota_de_iva"]) == 4:
+        elif linea["alicuota_de_iva"] == "0004":
             impuesto_liquidado = int(int(linea["importe_neto_gravado"]) * 0.105)
             linea["impuesto_liquidado"] = str(impuesto_liquidado).zfill(15)
             return linea
-        elif int(linea["alicuota_de_iva"]) == 5:
+        elif linea["alicuota_de_iva"] == "0005":
             impuesto_liquidado = int(
                 int(linea["importe_neto_gravado"]) * 0.21)
             linea["impuesto_liquidado"] = str(impuesto_liquidado).zfill(15)
             return linea
-        elif int(linea["alicuota_de_iva"]) == 6:
+        elif linea["alicuota_de_iva"] == "0006":
             impuesto_liquidado = int(
                 int(linea["importe_neto_gravado"]) * 0.27)
             linea["impuesto_liquidado"] = str(impuesto_liquidado).zfill(15)
             return linea
-        elif int(linea["alicuota_de_iva"]) == 9:
+        elif linea["alicuota_de_iva"] == "0009":
             impuesto_liquidado = int(
                 int(linea["importe_neto_gravado"]) * 0.025)
             linea["impuesto_liquidado"] = str(impuesto_liquidado).zfill(15)
