@@ -184,6 +184,7 @@ class Alicuota:
             for linea in f:
                 linea = self.diccionario_alicuota(linea)
                 linea = self.borrar_alicuota(linea)
+                linea = self.correccion_impuesto_liquidado(linea)
                 if linea == None:
                     continue
                 else:
@@ -224,7 +225,6 @@ class Verificacion(Comprobante,Alicuota):
             for linea_a in lista_alicuota:
                 
                 linea_alicuota = self.diccionario_alicuota(linea_a)
-                linea_alicuota = self.correccion_impuesto_liquidado(linea_a)
                 _comprobante = (linea_alicuota["tipo_de_comprobante"] +
                                 linea_alicuota["punto_de_venta"] +
                                 linea_alicuota["numero_de_comprobante"])
