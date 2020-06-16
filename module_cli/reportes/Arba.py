@@ -119,7 +119,6 @@ class Arba:
         valores_alicuota = []
 
         for documento in excel["Nro.Documento"]:
-            print(padron_arba.AlicuotaPercepcion.get(int(documento)))
             valores_alicuota.append(padron_arba.AlicuotaPercepcion.get(int(documento),default=0.00))
 
         excel.insert(loc=prefix_alicuota,column="alicuota",value=valores_alicuota)
@@ -153,8 +152,6 @@ class Arba:
         reporte = pd.DataFrame(data=datos_reportes)
         reporte_arba = []
 
-        #print(reporte.head(10))
-
         for x in range(reporte["cuit"].count()):
             y = (reporte["cuit"][x] +
                 reporte["fechaPercepcion"][x] +
@@ -166,6 +163,8 @@ class Arba:
                 reporte["importePercepcion"][x] +
                 reporte["tipoOperacion"][x])
             reporte_arba.append( y + "\r\n")
-
-        grabar(reporte_arba, path.join(self.directorio_, "arba.txt"))
+        if reporte_arba:
+            grabar(reporte_arba, path.join(self.directorio_, "arba.txt"))
+        else:
+            print("No se encontro ningun documento al cual aplicar percepcion")
         return
