@@ -114,9 +114,7 @@ class Arba:
         for documento in excel["Nro.Documento"]:
             valores_alicuota.append(padron_arba.AlicuotaPercepcion.get(int(documento),default=0.00))
 
-        nuevo_valores_alicuota = pd.to_numeric(valores_alicuota)
         print(valores_alicuota.dtypes)
-        print(nuevo_valores_alicuota.dtypes)
 
         excel.insert(loc=prefix_alicuota,column="alicuota",value=valores_alicuota)
 
