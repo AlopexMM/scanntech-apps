@@ -119,6 +119,7 @@ class Arba:
         valores_alicuota = []
 
         for documento in excel["Nro.Documento"]:
+            print(padron_arba.AlicuotaPercepcion.get(int(documento)))
             valores_alicuota.append(padron_arba.AlicuotaPercepcion.get(int(documento),default=0.00))
 
         excel.insert(loc=prefix_alicuota,column="alicuota",value=valores_alicuota)
@@ -132,9 +133,6 @@ class Arba:
 
         # Creamos un data frame que contenga solo las alicuotas que se pueden presentar
         #excel_reporte = excel[excel.alicuota > 0.0]
-        print(valores_alicuota)
-        print(excel.alicuota)
-        print(excel.montoPercibido)
         excel_reporte = excel[excel.montoPercibido > 0.0]
 
         # Esto lo hago para corregir el nro del index, ya que el filtro anterior me quito algunas lineas
