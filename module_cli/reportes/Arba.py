@@ -120,7 +120,7 @@ class Arba:
         valores_alicuota = []
 
         for documento in excel["Nro.Documento"]:
-            alicuota_padron = padron_arba.AlicuotaPercepcion.get_value(int(documento),"AlicuotaPercepcion")
+            alicuota_padron = padron_arba.AlicuotaPercepcion.get(int(documento))
             pprint(alicuota_padron)
             valores_alicuota.append(alicuota_padron)
 
