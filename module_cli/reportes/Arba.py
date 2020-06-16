@@ -112,9 +112,10 @@ class Arba:
         valores_alicuota = []
 
         for documento in excel["Nro.Documento"]:
-            valores_alicuota.append(float(padron_arba.AlicuotaPercepcion.get(int(documento),default=0.00)))
-
-
+            valores_alicuota.append(padron_arba.AlicuotaPercepcion.get(int(documento),default=0.00))
+        for x in range(len(valores_alicuota)):
+            nuevo_valor = float(valores_alicuota[x])
+            valores_alicuota[x] = nuevo_valor
 
         excel.insert(loc=prefix_alicuota,column="alicuota",value=valores_alicuota)
 
