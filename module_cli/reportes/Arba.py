@@ -121,7 +121,7 @@ class Arba:
 
         for documento in excel["Nro.Documento"]:
             alicuota_padron = padron_arba.AlicuotaPercepcion.get(int(documento),default=0.00)
-            pprint(alicuota_padron)
+            pprint(alicuota_padron[0])
             valores_alicuota.append(alicuota_padron)
 
         excel.insert(loc=prefix_alicuota,column="alicuota",value=valores_alicuota)
