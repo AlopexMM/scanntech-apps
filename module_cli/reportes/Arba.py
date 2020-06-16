@@ -131,6 +131,7 @@ class Arba:
         excel.insert(loc=prefix_monto_percibido,column="montoPercibido",value=(excel.TotalSinIva * excel.alicuota / 100))
 
         # Creamos un data frame que contenga solo las alicuotas que se pueden presentar
+        print(excel.alicuota)
         excel_reporte = excel[excel.alicuota > 0.0]
         excel_reporte = excel[excel.montoPercibido > 0.0]
 
