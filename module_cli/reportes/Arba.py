@@ -131,8 +131,7 @@ class Arba:
         excel.insert(loc=prefix_monto_percibido,column="montoPercibido",value=(excel.TotalSinIva * excel.alicuota / 100))
 
         # Creamos un data frame que contenga solo las alicuotas que se pueden presentar
-        #excel_reporte = excel[excel.alicuota > 0.0]
-        print(excel)
+        excel_reporte = excel[excel.alicuota > 0.0]
         excel_reporte = excel[excel.montoPercibido > 0.0]
 
         # Esto lo hago para corregir el nro del index, ya que el filtro anterior me quito algunas lineas
@@ -166,6 +165,7 @@ class Arba:
             reporte_arba.append( y + "\r\n")
         if reporte_arba:
             grabar(reporte_arba, path.join(self.directorio_, "arba.txt"))
+            print("Se genero el reporte de percepciones arba.txt")
         else:
             print("No se encontro ningun documento al cual aplicar percepcion")
         return
