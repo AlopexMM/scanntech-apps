@@ -112,15 +112,18 @@ class Arba:
         valores_alicuota = []
 
         for documento in excel["Nro.Documento"]:
-            valores_alicuota.append(padron_arba.AlicuotaPercepcion.get(int(documento),default=0.00))
+            valores_alicuota.append(float(padron_arba.AlicuotaPercepcion.get(int(documento),default=0.00)))
+
+
 
         excel.insert(loc=prefix_alicuota,column="alicuota",value=valores_alicuota)
+
 
         # Creamos una columna con el calculo del monto percibido
         prefix_monto_percibido = excel.columns.get_loc("Nro.Documento")
 
         # Insertamos la columna
-        excel.insert(loc=prefix_monto_percibido,column="montoPercibido",value=(excel.TotalSinIva * float(excel.alicuota) / 100))
+        excel.insert(loc=prefix_monto_percibido,column="montoPercibido",value=(excel.TotalSinIva * excel.alicuota / 100))
 
         # Creamos un data frame que contenga solo las alicuotas que se pueden presentar
         #excel_reporte = excel[excel.alicuota > 0.0]
