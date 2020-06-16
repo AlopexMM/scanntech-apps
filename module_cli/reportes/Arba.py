@@ -96,7 +96,7 @@ class Arba:
         # Insertamos la columna total sin iva
         excel.insert(loc=prefix_total_siva,column="TotalSinIva", value=excel["Total"] - excel["IVA"])
 
-        #Quitamos las columnas total e iva ya que no las vamos a necesitar mas
+        # Quitamos las columnas total e iva ya que no las vamos a necesitar mas
         columnas_quitar = ["Total","IVA"]
         excel.drop(columnas_quitar,axis="columns",inplace=True)
 
@@ -123,7 +123,7 @@ class Arba:
         excel.insert(loc=prefix_monto_percibido,column="montoPercibido",value=(excel.TotalSinIva * excel.alicuota / 100))
 
         # Creamos un data frame que contenga solo las alicuotas que se pueden presentar
-        excel_reporte = excel[excel.alicuota > 0.0]
+        #excel_reporte = excel[excel.alicuota > 0.0]
         excel_reporte = excel_reporte[excel_reporte.montoPercibido > 0.0]
 
         # Esto lo hago para corregir el nro del index, ya que el filtro anterior me quito algunas lineas
