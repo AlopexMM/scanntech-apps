@@ -101,7 +101,14 @@ class Arba:
         excel.drop(columnas_quitar,axis="columns",inplace=True)
 
         # Procesamos el archivo de de ARBA y creamos un data frame
-        padron_arba_df = pd.read_csv(self.padron_,sep=";",header=None,names=["NumeroCuit","AlicuotaPercepcion"],usecols=[4,8],decimal=",")
+        padron_arba_df = pd.read_csv(
+            self.padron_,
+            sep=";",
+            header=None,
+            names=["NumeroCuit","AlicuotaPercepcion"],
+            usecols=[4,8],
+            decimal=",",
+            dtype={"NumeroCuit":"int32","AlicuotaPercepcion":float})
 
         padron_arba = padron_arba_df.set_index("NumeroCuit")
 
@@ -113,8 +120,6 @@ class Arba:
 
         for documento in excel["Nro.Documento"]:
             valores_alicuota.append(padron_arba.AlicuotaPercepcion.get(int(documento),default=0.00))
-        for x in valores_alicuota:
-            print(type(x))
 
         excel.insert(loc=prefix_alicuota,column="alicuota",value=valores_alicuota)
 
