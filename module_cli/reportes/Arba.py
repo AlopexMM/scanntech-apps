@@ -109,9 +109,9 @@ class Arba:
             names=["NumeroCuit","AlicuotaPercepcion"],
             usecols=[4,8],
             decimal=",",
-            dtype={"AlicuotaPercepcion":float})
+            dtype={"NumeroCuit":str,"AlicuotaPercepcion":float})
 
-        padron_arba = padron_arba_df.set_index("NumeroCuit")
+        #padron_arba = padron_arba_df.set_index("NumeroCuit")
 
         # Insertamos la columna alicuota que contenga los porcentajes del padron que encuentre
         # Recorremos el listado de cuit del excel y genero una columna para insertar al dataframe
@@ -120,7 +120,7 @@ class Arba:
         valores_alicuota = []
 
         for documento in excel["Nro.Documento"]:
-            alicuota_padron = padron_arba.AlicuotaPercepcion.get(int(documento))
+            alicuota_padron = padron_arba.AlicuotaPercepcion[padron_arba.NumerpCuit == documento]
             pprint(alicuota_padron)
             valores_alicuota.append(alicuota_padron)
 
