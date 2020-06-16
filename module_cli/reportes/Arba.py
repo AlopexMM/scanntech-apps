@@ -109,6 +109,7 @@ class Arba:
         # Recorremos el listado de cuit del excel y genero una columna para insertar al dataframe
         prefix_alicuota = excel.columns.get_loc("Nro.Documento")
 
+        print(padron_arba.dtypes)
         valores_alicuota = []
 
         for documento in excel["Nro.Documento"]:
@@ -127,7 +128,6 @@ class Arba:
 
         # Creamos un data frame que contenga solo las alicuotas que se pueden presentar
         #excel_reporte = excel[excel.alicuota > 0.0]
-        print(excel.dtypes)
         excel_reporte = excel[excel.montoPercibido != 0]
 
         # Esto lo hago para corregir el nro del index, ya que el filtro anterior me quito algunas lineas
