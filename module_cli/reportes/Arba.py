@@ -132,6 +132,9 @@ class Arba:
 
         # Creamos un data frame que contenga solo las alicuotas que se pueden presentar
         #excel_reporte = excel[excel.alicuota > 0.0]
+        print(valores_alicuota)
+        print(excel.alicuota)
+        print(excel.montoPercibido)
         excel_reporte = excel[excel.montoPercibido > 0.0]
 
         # Esto lo hago para corregir el nro del index, ya que el filtro anterior me quito algunas lineas
