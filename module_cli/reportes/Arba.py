@@ -109,14 +109,12 @@ class Arba:
         # Recorremos el listado de cuit del excel y genero una columna para insertar al dataframe
         prefix_alicuota = excel.columns.get_loc("Nro.Documento")
 
-        print(padron_arba.dtypes)
         valores_alicuota = []
 
         for documento in excel["Nro.Documento"]:
             valores_alicuota.append(padron_arba.AlicuotaPercepcion.get(int(documento),default=0.00))
-
-        print(valores_alicuota.dtypes)
-
+        for x in valores_alicuotas:
+            print(type(x))
         excel.insert(loc=prefix_alicuota,column="alicuota",value=valores_alicuota)
 
 
