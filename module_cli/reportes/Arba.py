@@ -108,7 +108,7 @@ class Arba:
             names=["NumeroCuit","AlicuotaPercepcion"],
             usecols=[4,8],
             decimal=",",
-            dtype={AlicuotaPercepcion":float})
+            dtype={"AlicuotaPercepcion":float})
 
         padron_arba = padron_arba_df.set_index("NumeroCuit")
 
