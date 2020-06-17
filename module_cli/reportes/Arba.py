@@ -100,46 +100,50 @@ class Arba:
         # Quitamos las columnas total e iva ya que no las vamos a necesitar mas
         columnas_quitar = ["Total","IVA"]
         excel.drop(columnas_quitar,axis="columns",inplace=True)
+        excel = excel[excel["Nro.Documento"] != "111111111"]
+        excel.reset_index(inplace=True)
+
 
         # Procesamos el archivo de de ARBA y creamos un data frame
-        padron_arba_df = pd.read_csv(
-            self.padron_,
-            sep=";",
-            header=None,
-            names=["NumeroCuit","AlicuotaPercepcion"],
-            usecols=[4,8],
-            decimal=",",
-            dtype={"NumeroCuit":str,"AlicuotaPercepcion":float})
+        padron_arba = {}
 
-        #padron_arba = padron_arba_df.set_index("NumeroCuit")
+        with open(self.padron_,"r") as f:
+            # P;24042020;01052020;31052020;20000000028;D;N;N;6,00;25
+
+            for l in f.readlines():
+                l = l.replace("\n", "")
+                l = l.replace(",",".")
+                line = l.split(";")
+                if line[9] != "00":
+                    padron_arba[line[4]] = float(line[8])
+
 
         # Insertamos la columna alicuota que contenga los porcentajes del padron que encuentre
         # Recorremos el listado de cuit del excel y genero una columna para insertar al dataframe
-        prefix_alicuota = excel.columns.get_loc("Nro.Documento")
-
+        
         valores_alicuota = []
-
+        
         for documento in excel["Nro.Documento"]:
-            alicuota_padron = padron_arba_df.AlicuotaPercepcion[padron_arba_df.NumeroCuit == documento]
-            pprint(alicuota_padron)
-            valores_alicuota.append(alicuota_padron)
-
-        excel.insert(loc=prefix_alicuota,column="alicuota",value=valores_alicuota)
-
-
+            if documento in padron_arba:
+                valores_alicuota.append(padron_arba[documento])
+            else:
+                valores_alicuota.append(0.0)
+        
         # Creamos una columna con el calculo del monto percibido
         prefix_monto_percibido = excel.columns.get_loc("Nro.Documento")
+
+        # Insertamos la columna alicuota
+        excel.insert(loc=prefix_monto_percibido,column="alicuota", value=valores_alicuota)
 
         # Insertamos la columna
         excel.insert(loc=prefix_monto_percibido,column="montoPercibido",value=(excel.TotalSinIva * excel.alicuota / 100))
 
         # Creamos un data frame que contenga solo las alicuotas que se pueden presentar
-        excel_reporte = excel[excel.alicuota > 0.0]
         excel_reporte = excel[excel.montoPercibido > 0.0]
 
         # Esto lo hago para corregir el nro del index, ya que el filtro anterior me quito algunas lineas
         excel_reporte.reset_index(inplace=True)
-
+        pprint(excel_reporte)
         datos_reportes = {
             "cuit": cuitMod(excel_reporte["Nro.Documento"]),
             "fechaPercepcion": arreglo_fecha(fechas=excel_reporte["Fecha"]),
