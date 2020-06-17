@@ -23,7 +23,6 @@
 from os import path
 
 import pandas as pd
-from pprint import pprint
 
 # Funciones genericas
 def grabar(datos,nombre):
@@ -143,7 +142,6 @@ class Arba:
 
         # Esto lo hago para corregir el nro del index, ya que el filtro anterior me quito algunas lineas
         excel_reporte.reset_index(inplace=True)
-        pprint(excel_reporte)
         datos_reportes = {
             "cuit": cuitMod(excel_reporte["Nro.Documento"]),
             "fechaPercepcion": arreglo_fecha(fechas=excel_reporte["Fecha"]),
