@@ -67,6 +67,7 @@ def pasar_string(datos,fill=None,decimal=None):
         for x in datos:
             x = format(x,".2f")
             x = str(x)
+            x = x.replace("-", "")
             x = x.zfill(fill)
             lista.append(x)
     elif decimal == False:
@@ -92,7 +93,8 @@ class Ater:
 
     def correr_reporte(self):
     
-        excel = pd.read_excel(self.excel_file, header=2 , skipfooter=7, convert_float=False)
+        excel = pd.read_excel(self.excel_file, header=2,
+                              skipfooter=7, convert_float=False)
         #excel = excel[excel["Importe Retención"] != 0] # Esta linea hace que aquellos que tienen retención 0 se ignoren
         excel = excel[excel["Nro.Documento"] != 11111111113]
         excel.reset_index(inplace=True)
@@ -119,6 +121,7 @@ class Ater:
         values = excel["tipoComprobante"][excel.montoBase < 0]
         values.fillna("C     ",inplace=True)
         excel.tipoComprobante.fillna(value=values,inplace=True)
+
 
         # Campos de las columnas que no sirven mas luego de procesar el archivo
         columnas_quitar = ["Fecha Operación", "Documento",
