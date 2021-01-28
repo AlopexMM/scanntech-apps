@@ -175,9 +175,7 @@ def arba(args):
     os.remove(excel)
 
 def ater(args):
-    excel_ = archivo_path(args.excel)
-    directorio_ejecucion = os.path.dirname(os.path.abspath(excel_))
-    excel = zip_exctract(zip_=excel_,dir_=directorio_ejecucion)
+    excel = archivo_path(args.excel)
     ater = Ater.Ater(excel_archivo=excel)
     ater.correr_reporte()
     os.remove(excel)
