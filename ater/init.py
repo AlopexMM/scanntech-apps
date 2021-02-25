@@ -45,7 +45,7 @@ class Ater(object):
     def help_app(self):
         msg = """\
                 Ater necesita un archivo excel de donde puede sacar los datos en el modulo de reportes
-                se encuentra el reporte \"Tieckets de clientes con factura y percepcion\"
+                se encuentra el reporte \"Tickets de clientes con factura y percepcion\"
                 """
         print(msg)
     
