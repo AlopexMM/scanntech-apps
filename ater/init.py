@@ -42,6 +42,13 @@ class Ater(object):
         self.alicuota = "003.00"
         self.contribuyente_conv_multi = "00"
     
+    def help_app(self):
+        msg = """\
+                Ater necesita un archivo excel de donde puede sacar los datos en el modulo de reportes
+                se encuentra el reporte \"Tieckets de clientes con factura y percepcion\"
+                """
+        print(msg)
+    
     def run(self):
     
         # Carga de excel
@@ -50,6 +57,7 @@ class Ater(object):
         except IndexError:
             help_app()
             exit()
+        
         sheet = wb['0 - Tickets de Clientes con Fac']
         rows = sheet.rows
         next(rows)
@@ -116,9 +124,3 @@ class Ater(object):
                 ofs.write(linea+"\r\n")
         print("Se termino de procesar el excel, por favor revise el archivo ater.txt")
     
-    def help_app(self):
-        msg = """\
-                Ater necesita un archivo excel de donde puede sacar los datos en el modulo de reportes
-                se encuentra el reporte \"Tieckets de clientes con factura y percepcion\"
-                """
-        print(msg)
