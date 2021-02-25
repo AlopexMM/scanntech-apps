@@ -9,3 +9,7 @@ Programas faltantes
 - ARBA
 - Citi Ventas
 - Citi Compras
+
+# Snapcarft config
+
+- add yalm
