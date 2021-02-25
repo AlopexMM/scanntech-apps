@@ -19,6 +19,10 @@ AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
 LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE."""
+"""
+Procesa un reporte excel del modulo de reportes del sistema Scanntech y produce la exportación de ATER
+"""
+
 from openpyxl import load_workbook
 from datetime import datetime, timedelta
 from time import strftime
@@ -44,7 +48,7 @@ class Ater(object):
         try:
             wb = load_workbook(self.argv[1])
         except IndexError:
-            help()
+            help_app()
             exit()
         sheet = wb['0 - Tickets de Clientes con Fac']
         rows = sheet.rows
@@ -112,7 +116,7 @@ class Ater(object):
                 ofs.write(linea+"\r\n")
         print("Se termino de procesar el excel, por favor revise el archivo ater.txt")
     
-    def help(self):
+    def help_app(self):
         msg = """\
                 Ater necesita un archivo excel de donde puede sacar los datos en el modulo de reportes
                 se encuentra el reporte \"Tieckets de clientes con factura y percepcion\"
