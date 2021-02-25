@@ -55,7 +55,7 @@ class Ater(object):
         try:
             wb = load_workbook(self.argv[1])
         except IndexError:
-            help_app()
+            self.help_app()
             exit()
         
         sheet = wb['0 - Tickets de Clientes con Fac']
