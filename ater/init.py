@@ -70,13 +70,13 @@ class Ater(object):
                 break
             # Revisamos que el cuit este bien si no se continua con la siguiente linea
             try:
-                if self.cuit.verificador(row[7].value):
-                    cuit = row[7].value
+                if self.cuit.verificador(row[9].value):
+                    cuit = row[9].value
                     linea += cuit
                 else:
                     continue
             except TypeError:
-                print("Ocurrio un error con la cuit {} del nro de operacion {}.\nError ocurrido: Tipo de formato".format(row[7].value,row[4].value))
+                print("Ocurrio un error con la cuit {} del nro de operacion {}.\nError ocurrido: Tipo de formato".format(row[9].value,row[10].value))
             # Como obtener el valor de la fecha
             if row[0].value != "Fecha":
                 try:
