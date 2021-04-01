@@ -107,7 +107,7 @@ class Ater(object):
             if total == 0.0:
                 continue
             else:
-                monto_base = total - iva
+                monto_base = float(total) - float(iva)
                 linea += "{:.2f}".format(monto_base).zfill(15)
             # Agregamos la alicuota de la percepcion
             linea += self.alicuota
