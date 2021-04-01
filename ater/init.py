@@ -87,23 +87,23 @@ class Ater(object):
                     dia = row[0].value
                     fecha_percepcion = dia.strftime("%d/%m/%Y")
                     linea += fecha_percepcion
-            if row[3].value == "FACTURA":
+            if row[1].value == "FACTURA":
                 tipo_comprobante = "TF    "
-            elif row[3].value == "NOTA DE CREDITO":
+            elif row[1].value == "NOTA DE CREDITO":
                 tipo_comprobante = "C     "
             linea += tipo_comprobante
             # Obtenemos la letra de la factura
-            letra_comprobante = row[5].value
+            letra_comprobante = row[2].value
             linea += letra_comprobante 
             # Obtenemos el punto de venta
-            punto_venta = int(row[2].value)
+            punto_venta = int(row[3].value)
             linea += str(punto_venta).zfill(4)
             # Numero de comprobante
             numero_comprobante = row[4].value
             linea += str(numero_comprobante).zfill(8)
             # Obtenemos el importe base
-            total = row[10].value
-            iva = row[11].value
+            total = row[5].value
+            iva = row[6].value
             if total == 0.0:
                 continue
             else:
@@ -112,7 +112,7 @@ class Ater(object):
             # Agregamos la alicuota de la percepcion
             linea += self.alicuota
             # Obtenemos el importe percibido
-            importe_percibido = row[9].value
+            importe_percibido = row[7].value
             if importe_percibido == 0.0:
                 continue
             else:
