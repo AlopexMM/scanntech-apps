@@ -70,13 +70,13 @@ class Ater(object):
                 break
             # Revisamos que el cuit este bien si no se continua con la siguiente linea
             try:
-                if self.cuit.verificador(row[9].value):
-                    cuit = row[9].value
+                if self.cuit.verificador(str(row[8].value).replace(".","")):
+                    cuit = str(row[8].value).replace(".","")
                     linea += cuit
                 else:
                     continue
             except TypeError:
-                print("Ocurrio un error con la cuit {} del nro de operacion {}.\nError ocurrido: Tipo de formato".format(row[9].value,row[10].value))
+                print("Ocurrio un error con la cuit {} del nro de operacion {}.\nError ocurrido: Tipo de formato".format(row[8].value,row[4].value))
             # Como obtener el valor de la fecha
             if row[0].value != "Fecha":
                 try:
@@ -121,6 +121,7 @@ class Ater(object):
             linea += self.contribuyente_conv_multi
             # Grabamos la linea en un archivo txt
             with open ("ater.txt", mode="a") as ofs:
+                print(linea)
                 ofs.write(linea+"\r\n")
         print("Se termino de procesar el excel, por favor revise el archivo ater.txt")
     
