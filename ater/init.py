@@ -121,7 +121,6 @@ class Ater(object):
             linea += self.contribuyente_conv_multi
             # Grabamos la linea en un archivo txt
             with open ("ater.txt", mode="a") as ofs:
-                print(linea)
                 ofs.write(linea+"\r\n")
         print("Se termino de procesar el excel, por favor revise el archivo ater.txt")
     
