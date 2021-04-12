@@ -1,3 +1,4 @@
+
 """MIT License
 
 Copyright (c) 2020 Mario Mori
@@ -29,55 +30,64 @@ from time import strftime
 from afip.cuit import Cuit
 from sys import exit
 
-# Class
-
-class Ater(object):
-    
+class Arba(object):
     def __init__(self, *args):
         self.argv = args[0]
-        self.excel_date = datetime(year=1900,month=1, day=1)
+        self.excel_date = datetime(year=1900,month=1,day=1)
         self.cuit = Cuit()
-        self.tipo_agente = "1"
-        self.motivo = "061"
-        self.alicuota = "003.00"
-        self.contribuyente_conv_multi = "00"
     
     def help_app(self):
         msg = """\
-                Ater necesita un archivo excel de donde puede sacar los datos en el modulo de reportes
-                se encuentra el reporte \"ater\"
-                """
+            Arba necesita un archivo excel de donde puede sacar los datos de las facturas
+            y el padron que se le entrega a Uy, consultar a dgiovagnoli@scanntech.com o mmori@scanntech.com
+            por estos archivos
+            """
         print(msg)
     
-    def run(self):
+    def __cuits_arba(self, file):
+        with open(file, mode='r') as f:
+           list_cuit = dict()
+           for line in f.readlines():
+               l = line.split(';')
+               if l[10] == '1':
+                   list_cuit[l[4]] = l[8]
+        return list_cuit
     
-        # Carga de excel
+    def __search_cuit(self, cuit):
+        for 
+
+    def run(self):
         try:
             wb = load_workbook(self.argv[1])
+            padron = self.__cuits_arba(self.argv[2])
         except IndexError:
             self.help_app()
             exit()
         
+
         sheet = wb['0 - Tickets de Clientes con Fac']
         rows = sheet.rows
         next(rows)
         next(rows)
         next(rows)
         for row in rows:
-            linea = self.tipo_agente + self.motivo
-            # Verificamos si la celda esta en blanco se cierra el for
+            linea = ""
+            # Verifico si se encuentra vacia la fecha, de ser None se termina el for
             if row[0].value == None:
                 break
-            # Revisamos que el cuit este bien si no se continua con la siguiente linea
+                
             try:
-                if self.cuit.verificador(str(row[8].value).replace(".","")):
-                    cuit = str(row[8].value).replace(".","")
+                # Verifico el cuit
+                if self.cuit.verificador(str(row[7].value).replace('.','')):
+                    cuit = str(row[7].value).replace('.','')
+                    cuit = f'{cuit[0:2]}-{cuit[2:10]}-{cuit[10:]}'
                     linea += cuit
                 else:
                     continue
             except TypeError:
-                print("Ocurrio un error con la cuit {} del nro de operacion {}.\nError ocurrido: Tipo de formato".format(row[8].value,row[4].value))
-            # Como obtener el valor de la fecha
+                print("Ocurrio un error con la cuit {} del nro de operacion {}.\nError ocurrido: Tipo de formato".format(row[8].value), row[4].value))
+            
+            # Obtenemos la fecha
             if row[0].value != "Fecha":
                 try:
                     days = timedelta(days = (int(row[0].value) - 2))
@@ -88,39 +98,42 @@ class Ater(object):
                     fecha_percepcion = dia.strftime("%d/%m/%Y")
                     linea += fecha_percepcion
             if row[1].value == "FACTURA":
-                tipo_comprobante = "TF    "
+                tipo_comprobante = "F"
             elif row[1].value == "NOTA DE CREDITO":
-                tipo_comprobante = "C     "
+                tipo_comprobante = "C"
             linea += tipo_comprobante
             # Obtenemos la letra de la factura
-            letra_comprobante = row[2].value
+            letra_comprobante = str(row[5].value)
             linea += letra_comprobante 
             # Obtenemos el punto de venta
-            punto_venta = int(row[3].value)
+            punto_venta = int(row[2].value)
             linea += str(punto_venta).zfill(4)
             # Numero de comprobante
             numero_comprobante = row[4].value
             linea += str(numero_comprobante).zfill(8)
             # Obtenemos el importe base
-            total = row[5].value
-            iva = row[6].value
+            total = row[10].value
+            iva = row[11].value
             if total == 0.0:
                 continue
             else:
                 monto_base = float(total) - float(iva)
-                linea += "{:.2f}".format(monto_base).zfill(15)
-            # Agregamos la alicuota de la percepcion
-            linea += self.alicuota
+                linea += "{:.2f}".format(monto_base).zfill(12)
             # Obtenemos el importe percibido
-            importe_percibido = row[7].value
-            if importe_percibido == 0.0:
-                continue
+            if row[7] in padron.keys():
+                if float(padon[row[7]]) == 0.0:
+                    continue
+                else:
+                    monto_percibido = monto_base * float(padron[row[7]]) / 100
+                    linea += '{:.2f}'.format(monto_percibido).zfill(11)
             else:
-                linea += "{:.2f}".format(importe_percibido).zfill(15)
-            # Agregamos el dato del convenio multilateral
-            linea += self.contribuyente_conv_multi
+                continue
+            # Agregamos el dato de tipo de operacion
+            linea += 'A'
             # Grabamos la linea en un archivo txt
             with open ("ater.txt", mode="a") as ofs:
                 ofs.write(linea+"\r\n")
         print("Se termino de procesar el excel, por favor revise el archivo ater.txt")
-    
+
+
+

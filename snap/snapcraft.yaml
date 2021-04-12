@@ -10,6 +10,10 @@ confinement: strict # use 'strict' once you have the right plugs and slots
 license: MIT
 
 apps:
+    arba:
+        command: bin/arba
+        plugs:
+            - home
     ater:
         command: bin/ater
         plugs:
