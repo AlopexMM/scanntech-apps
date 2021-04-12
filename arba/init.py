@@ -1,4 +1,3 @@
-
 """MIT License
 
 Copyright (c) 2020 Mario Mori
@@ -21,7 +20,7 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE."""
 """
-Procesa un reporte excel del modulo de reportes del sistema Scanntech y produce la exportación de ATER
+Procesa un reporte excel del modulo de reportes del sistema Scanntech y produce la exportación de ARBA
 """
 
 from openpyxl import load_workbook
@@ -31,6 +30,7 @@ from afip.cuit import Cuit
 from sys import exit
 
 class Arba(object):
+
     def __init__(self, *args):
         self.argv = args[0]
         self.excel_date = datetime(year=1900,month=1,day=1)
@@ -53,9 +53,6 @@ class Arba(object):
                    list_cuit[l[4]] = l[8]
         return list_cuit
     
-    def __search_cuit(self, cuit):
-        for 
-
     def run(self):
         try:
             wb = load_workbook(self.argv[1])
@@ -75,9 +72,9 @@ class Arba(object):
             # Verifico si se encuentra vacia la fecha, de ser None se termina el for
             if row[0].value == None:
                 break
-                
             try:
                 # Verifico el cuit
+                cuit = str(row[7].value)
                 if self.cuit.verificador(str(row[7].value).replace('.','')):
                     cuit = str(row[7].value).replace('.','')
                     cuit = f'{cuit[0:2]}-{cuit[2:10]}-{cuit[10:]}'
@@ -85,8 +82,7 @@ class Arba(object):
                 else:
                     continue
             except TypeError:
-                print("Ocurrio un error con la cuit {} del nro de operacion {}.\nError ocurrido: Tipo de formato".format(row[8].value), row[4].value))
-            
+                print("Ocurrio un error con la cuit {} del nro de operacion {}.\nError ocurrido: Tipo de formato".format(row[8].value, row[4].value))
             # Obtenemos la fecha
             if row[0].value != "Fecha":
                 try:
@@ -97,9 +93,9 @@ class Arba(object):
                     dia = row[0].value
                     fecha_percepcion = dia.strftime("%d/%m/%Y")
                     linea += fecha_percepcion
-            if row[1].value == "FACTURA":
+            if row[3].value == "FACTURA":
                 tipo_comprobante = "F"
-            elif row[1].value == "NOTA DE CREDITO":
+            elif row[3].value == "NOTA DE CREDITO":
                 tipo_comprobante = "C"
             linea += tipo_comprobante
             # Obtenemos la letra de la factura
@@ -120,20 +116,23 @@ class Arba(object):
                 monto_base = float(total) - float(iva)
                 linea += "{:.2f}".format(monto_base).zfill(12)
             # Obtenemos el importe percibido
-            if row[7] in padron.keys():
-                if float(padon[row[7]]) == 0.0:
+            if row[7].value in padron.keys():
+                if padron[str(row[7].value).replace(',','.')] == '0.00':
                     continue
                 else:
-                    monto_percibido = monto_base * float(padron[row[7]]) / 100
+                    alicuota = padron[str(row[7].value)]
+                    monto_percibido = monto_base * float(alicuota.replace(',','.')) / 100
                     linea += '{:.2f}'.format(monto_percibido).zfill(11)
             else:
                 continue
             # Agregamos el dato de tipo de operacion
             linea += 'A'
             # Grabamos la linea en un archivo txt
-            with open ("ater.txt", mode="a") as ofs:
+            with open("arba.txt", mode="a") as ofs:
                 ofs.write(linea+"\r\n")
-        print("Se termino de procesar el excel, por favor revise el archivo ater.txt")
+        print("Se termino de procesar el excel, por favor revise el archivo arba.txt")
 
-
-
+if __name__ == '__main__':
+    from sys import argv
+    arba = Arba(argv)
+    arba.run()

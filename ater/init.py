@@ -29,8 +29,6 @@ from time import strftime
 from afip.cuit import Cuit
 from sys import exit
 
-# Class
-
 class Ater(object):
     
     def __init__(self, *args):
