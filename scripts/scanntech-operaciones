@@ -21,6 +21,8 @@ LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 SOFTWARE."""
 
+from pyfiglet import figlet_format
+
 msg = """\
     Como utilizar el aplicativo.
     Si llamamos al aplicativo por su nombre scanntech-operaciones veremos este mensaje.
@@ -33,6 +35,11 @@ msg = """\
         scanntech-operaciones.ater [EXCEL]
     - Arba
         scanntech-operaciones.arba [EXCEL] [PADRON TXT]
+
+
     """
+print(figlet_format("Scanntech"))
 
 print(msg)
+
+print("https://github.com/AlopexMM")

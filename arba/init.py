@@ -28,6 +28,8 @@ from datetime import datetime, timedelta
 from time import strftime
 from afip.cuit import Cuit
 from sys import exit
+from subprocess import call as terminal_command
+from pyfiglet import figlet_format
 
 class Arba(object):
 
@@ -130,7 +132,8 @@ class Arba(object):
             # Grabamos la linea en un archivo txt
             with open("arba.txt", mode="a") as ofs:
                 ofs.write(linea+"\r\n")
-        print("Se termino de procesar el excel, por favor revise el archivo arba.txt")
+        terminal_command("clear")
+        print(figlet_format("Archivo procesado"))
 
 if __name__ == '__main__':
     from sys import argv

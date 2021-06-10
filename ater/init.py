@@ -28,6 +28,8 @@ from datetime import datetime, timedelta
 from time import strftime
 from afip.cuit import Cuit
 from sys import exit
+from pyfiglet import figlet_format
+from subprocess import call as terminal_command
 
 class Ater(object):
     
@@ -120,5 +122,5 @@ class Ater(object):
             # Grabamos la linea en un archivo txt
             with open ("ater.txt", mode="a") as ofs:
                 ofs.write(linea+"\r\n")
-        print("Se termino de procesar el excel, por favor revise el archivo ater.txt")
-    
+        terminal_command("clear")        
+        print(figlet_format("Archivo procesado"))
