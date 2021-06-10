@@ -135,6 +135,7 @@ class Arba(object):
         terminal_command("clear")
         print(figlet_format("Archivo procesado"))
 
+
 if __name__ == '__main__':
     from sys import argv
     arba = Arba(argv)
