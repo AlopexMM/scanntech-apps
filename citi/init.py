@@ -1,8 +1,6 @@
-# TODO trasladando a snap app
-
 import sys
 
-from reportes import Venta, Compra, Verificaciones
+from .reportes import Venta, Compra, Verificaciones
 
 class Citi(object):
     """ Process citi files and write new ones with corrections"""
