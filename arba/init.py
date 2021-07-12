@@ -53,6 +53,7 @@ class Arba(object):
                l = line.split(';')
                if l[10] == '1':
                    list_cuit[l[4]] = l[8]
+               elif
         return list_cuit
     
     def run(self):
@@ -102,7 +103,7 @@ class Arba(object):
             linea += tipo_comprobante
             # Obtenemos la letra de la factura
             letra_comprobante = str(row[5].value)
-            linea += letra_comprobante 
+            linea += letra_comprobante
             # Obtenemos el punto de venta
             punto_venta = int(row[2].value)
             linea += str(punto_venta).zfill(4)
@@ -119,7 +120,7 @@ class Arba(object):
                 linea += "{:.2f}".format(monto_base).zfill(12)
             # Obtenemos el importe percibido
             if row[7].value in padron.keys():
-                if padron[str(row[7].value).replace(',','.')] == '0.00':
+                if padron[str(row[7].value)] == '0.00':
                     continue
                 else:
                     alicuota = padron[str(row[7].value)]

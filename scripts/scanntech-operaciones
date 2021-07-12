@@ -42,4 +42,4 @@ print(figlet_format("Scanntech"))
 
 print(msg)
 
-print("https://github.com/AlopexMM")
+print("Created by Mario Mori source https://github.com/AlopexMM/scanntech-apps\nContact me at Discord AlopexMM#0983")

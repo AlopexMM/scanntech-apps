@@ -15,6 +15,9 @@ class Citi(object):
         #Estas tienen que ir acompañada de dos archivos:
         #   comprobantes
         self.argv = args[0]
+
+    def run(self):
+
         if self.argv[1] == '-c' or self.argv[1] == '--compras':
             try:
                 self.run_compras(cbte=self.argv[2], ali=self.argv[3])
