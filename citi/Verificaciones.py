@@ -1,4 +1,4 @@
-from reportes import Venta
+import Venta
 
 # Funcion que devuelve un nro unico formado por valores que se encuentran
 # en ambos reportes

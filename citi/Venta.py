@@ -3,9 +3,6 @@
 ''' En esta clase se puede encontrar las funciones que modifican el archivo de 
 comprobantes'''
 
-
-
-
 # Verificadores
 
 def verificador_cuit(cuit):

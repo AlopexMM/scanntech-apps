@@ -1,7 +1,6 @@
 # -*- coding: latin-1 -*-
 # Con esta clase se procesara los archivos de exportación del citi compras
 
-
 # Compras comprobantes
 
 class Comprobante:
