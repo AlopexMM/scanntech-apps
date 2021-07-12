@@ -35,7 +35,9 @@ msg = """\
         scanntech-operaciones.ater [EXCEL]
     - Arba
         scanntech-operaciones.arba [EXCEL] [PADRON TXT]
-
+    - Citi
+        -c o --compras [CBTE] [ALICUOTAS]
+        -v o --ventas [CBTE] [ALICUOTAS]
 
     """
 print(figlet_format("Scanntech"))
