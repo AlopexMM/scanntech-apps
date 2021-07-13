@@ -70,7 +70,7 @@ class Citi(object):
     def _write_file(self, data, file_name):
         with open(file_name, 'w') as f:
             for line in data:
-                f.write(line + '\n')
+                f.write(line + '\n\r')
 
 if __name__ == '__main__':
     Citi(sys.argv)
