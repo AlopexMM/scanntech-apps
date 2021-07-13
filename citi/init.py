@@ -56,7 +56,7 @@ class Citi(object):
         alicuota = Venta.alicuota()
         lista_cbte = comprobante.procesamiento_comprobantes(cbte)
         lista_alicuotas = alicuota.procesamiento_alicuotas(ali)
-        comprobar = Verificaciones.verificaciones()
+        comprobar = Venta.verificaciones()
         lista_cbte = comprobar.verificar_nro_alicuotas(
             lista_cbte, lista_alicuotas)
         lista_cbte = comprobar.verificar_monto_final(

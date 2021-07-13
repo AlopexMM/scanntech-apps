@@ -1,5 +1,3 @@
-import Venta
-
 # Funcion que devuelve un nro unico formado por valores que se encuentran
 # en ambos reportes
 def codigo_unico_cbte_alicuota(data):

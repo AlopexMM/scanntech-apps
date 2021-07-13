@@ -22,4 +22,3 @@ SOFTWARE."""
 from citi.init import Citi
 from citi import Venta
 from citi import Compra
-from citi import Verificaciones
