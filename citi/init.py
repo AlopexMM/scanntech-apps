@@ -2,7 +2,6 @@ import sys
 
 from citi import Venta
 from citi import Compra
-from citi import Verificaciones
 
 class Citi(object):
     """ Process citi files and write new ones with corrections"""
