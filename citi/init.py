@@ -20,6 +20,7 @@ class Citi(object):
     def run(self):
 
         try:
+            print(self.argv)
             if self.argv[1] == '-c' or self.argv[1] == '--compras':
                 self.run_compras(cbte=self.argv[2], ali=self.argv[3])
             elif self.argv[1] == '-v' or self.argv[1] == '--ventas':
