@@ -19,24 +19,18 @@ class Citi(object):
 
     def run(self):
 
-        if self.argv[1] == '-c' or self.argv[1] == '--compras':
-            try:
+        try:
+            if self.argv[1] == '-c' or self.argv[1] == '--compras':
                 self.run_compras(cbte=self.argv[2], ali=self.argv[3])
-            except Exception:
-                self._help(args=self.argv)
-        elif self.argv[1] == '-v' or self.argv[1] == '--ventas':
-            try:
+            elif self.argv[1] == '-v' or self.argv[1] == '--ventas':
                 self.run_ventas(cbte=self.argv[2], ali=self.argv[3])
-            except Exception:
-                self._help(args=self.argv)
-        elif self.argv[1] == '-rmp' or self.argv[1] == '--remove-ptv':
-            try:
+            elif self.argv[1] == '-rmp' or self.argv[1] == '--remove-ptv':
                 ptv = self.argv[2].zfill(5)
                 self.run_ventas(ptv=ptv, cbte=self.argv[3], ali=self.argv[4])
-            except Exception:
-                self._help(args=self.argv)
-        else:
-            self._help(self.argv)
+            else:
+                self._help(self.argv)
+        except Exception:
+            self._help(args=self.argv)
 
     def _help(self, args=None):
         msg = """
