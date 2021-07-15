@@ -20,7 +20,6 @@ class Citi(object):
     def run(self):
 
         try:
-            print(self.argv)
             if self.argv[1] == '-c' or self.argv[1] == '--compras':
                 self.run_compras(cbte=self.argv[2], ali=self.argv[3])
             elif self.argv[1] == '-v' or self.argv[1] == '--ventas':
@@ -29,8 +28,9 @@ class Citi(object):
                 ptv = self.argv[2].zfill(5)
                 self.run_ventas(ptv=ptv, cbte=self.argv[3], ali=self.argv[4])
             else:
-                self._help(self.argv)
-        except Exception:
+                self._help(args=self.argv)
+        except Exception as e:
+            print(e)
             self._help(args=self.argv)
 
     def _help(self, args=None):
