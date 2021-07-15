@@ -353,7 +353,19 @@ class comprobante:
                 return nueva_lista
         except Exception as error:
             print(error)
-            return 
+            return
+
+    def remove_ptv(self, ptv, archivo):
+        nueva_lista = []
+        try:
+            with open(archivo, mode='r', encoding='latin-1') as lista:
+                for linea in lista:
+                    data = self.campos_comprobante(linea)
+                    if data['punto de venta'] != ptv:
+                        nueva_lista.append(self.construir_linea_comprobante(data))
+            return nueva_lista
+        except Exception as e:
+            print(e)
 
 class alicuota:
 
@@ -386,7 +398,7 @@ class alicuota:
 
     def procesamiento_alicuotas(self, archivo):
         nueva_lista = []
-        try:    
+        try:
             with open(archivo, mode='r', encoding='latin-1') as lista:
 
                 for linea in lista:
@@ -397,4 +409,16 @@ class alicuota:
                 return nueva_lista
         except Exception as error:
             print(error)
-            return 
+            return
+
+    def remove_ptv(self, ptv, archivo):
+        nueva_lista = []
+        try:
+            with open(archivo, mode='r', encoding='latin-1') as lista:
+                for linea in lista:
+                    data = self.campos_alicuotas(linea)
+                    if data['punto de venta'] != ptv:
+                        nueva_lista.append(self.construir_linea_alicuota(data))
+            return nueva_lista
+        except Exception as e:
+            print(e)

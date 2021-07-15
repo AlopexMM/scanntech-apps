@@ -38,6 +38,7 @@ msg = """\
     - Citi
         -c o --compras [CBTE] [ALICUOTAS]
         -v o --ventas [CBTE] [ALICUOTAS]
+        -rmp o --remove-ptv [PTV] [CBTE] [ALICUOTAS]
 
     """
 print(figlet_format("Scanntech"))

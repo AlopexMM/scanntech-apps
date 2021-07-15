@@ -11,6 +11,8 @@ class Citi(object):
         #Las opciones que maneja son:
         #   -c o --compras para citi compras
         #   -v o --ventas para citi ventas
+        #   -rmp o --remove-ptv para citi ventas
+        # TODO quitar comprobantes con valor cero de compras y poder quitar puntos de venta de ventas
         #Estas tienen que ir acompañada de dos archivos:
         #   comprobantes
         self.argv = args[0]
@@ -27,19 +29,27 @@ class Citi(object):
                 self.run_ventas(cbte=self.argv[2], ali=self.argv[3])
             except Exception:
                 self._help(args=self.argv)
+        elif self.argv[1] == '-rmp' or self.argv[1] == '--remove-ptv':
+            try:
+                ptv = self.argv[2].zfill(5)
+                self.run_ventas(ptv=ptv, cbte=self.argv[3], ali=self.argv[4])
+            except Exception:
+                self._help(args=self.argv)
         else:
             self._help(self.argv)
 
     def _help(self, args=None):
         msg = """
-            -v o --ventas [archivo comprobantes] [archivo alicuotas]
-            -c o --compras [archivo comprobantes] archivo alicuotas]
+            -v o --ventas [CBTE] [ALICUOTAS]
+            -rmp o --remove-ptv [PTV] [CBTE] [ALICUOTAS]
+            -c o --compras [CBTE] [ALICUOTAS]
             """
         print(msg)
         if args is not None:
             print("\tRevise los argumentos pasados {}".format(args[1:]))
 
     def run_compras(self, cbte, ali):
+        """ Remueve lineas segun la lista de puntos de venta """
         comprobante = Compra.Comprobante()
         alicuota = Compra.Alicuota()
         lista_cbte = comprobante.procesar_comprobante(cbte)
@@ -65,6 +75,16 @@ class Citi(object):
 
         self._write_file(lista_cbte,'ventas_cbte.txt')
         self._write_file(lista_alicuotas, 'ventas_alicuotas.txt')
+
+    def remove_ptv(self, ptv, cbte, ali):
+        comprobante = Venta.comprobante()
+        alicuota = Venta.alicuota()
+        lista_cbte = comprobante.remove_ptv(ptv,cbte)
+        lista_alicuotas = alicuota.remove_ptv(ptv,ali)
+
+        self._write_file(lista_cbte,'ventas_cbte.txt')
+        self._write_file(lista_alicuotas, 'ventas_alicuotas.txt')
+
 
     def _write_file(self, data, file_name):
         with open(file_name, 'w', encoding='latin-1', newline='\r\n') as f:
