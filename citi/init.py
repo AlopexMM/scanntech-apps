@@ -12,7 +12,7 @@ class Citi(object):
         #   -c o --compras para citi compras
         #   -v o --ventas para citi ventas
         #   -rmp o --remove-ptv para citi ventas
-        # TODO quitar comprobantes con valor cero de compras y poder quitar puntos de venta de ventas
+        # TODO quitar comprobantes con valor cero de compras
         #Estas tienen que ir acompañada de dos archivos:
         #   comprobantes
         self.argv = args[0]
@@ -26,7 +26,7 @@ class Citi(object):
                 self.run_ventas(cbte=self.argv[2], ali=self.argv[3])
             elif self.argv[1] == '-rmp' or self.argv[1] == '--remove-ptv':
                 ptv = self.argv[2].zfill(5)
-                self.run_ventas(ptv=ptv, cbte=self.argv[3], ali=self.argv[4])
+                self.remove_ptv(ptv=ptv, cbte=self.argv[3], ali=self.argv[4])
             else:
                 self._help(args=self.argv)
         except Exception as e:

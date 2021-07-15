@@ -1,6 +1,6 @@
 name: scanntech-operaciones # you probably want to 'snapcraft register <name>'
 base: core20 # the base snap is the execution environment for this snap
-version: '0.3.3-2' # just for humans, typically '1.2+git' or '1.3.2'
+version: '0.3.3-3' # just for humans, typically '1.2+git' or '1.3.2'
 summary: Herramientas que entregan reportes de clientes # 79 char long summary
 description: |
     Te permite resolver el reporte de ATER a partir del reporte de Z fiscales
