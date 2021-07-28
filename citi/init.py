@@ -93,33 +93,33 @@ class Citi(object):
             con = sqlite3.connect('ventas.db')
             cur = con.cursor()
             cur.execute('''CREATE TABLE cbte (
-                        tipo de comprobante,
-                        punto de venta,
-                        numero de comprobante,
-                        numero de comprobante hasta,
-                        codigo de documento del comprador,
-                        numero de identificacion del comprador,
-                        apellido y nombre o denominacion del comprador,
-                        importe total de la operacion,
-                        importe total de conceptos que no integran el precio neto gravado,
-                        percepcion a no categorizados,
-                        importe de operaciones exentas,
-                        importe de percepciones o pagos a cuenta de impuestos nacionales,
-                        importe de percepciones de ingresos brutos,
-                        importe de percepciones impuestos municipales,
-                        importe impuestos internos,
-                        codigo de moneda,
-                        tipo de cambio,
-                        cantidad de alicuotas de iva,
-                        codigo de operacion,
-                        otros tributos,
-                        fecha de vencimiento de pago)''')
-            cur.execute('''CREATE TABLE alicuotas (tipo de comprobante,
-                        punto de venta,
-                        numero de comprobante
-                        importe neto gravado,
-                        alicuota de iva,
-                        impuesto liquidado)''')
+                        "tipo de comprobante",
+                        "punto de venta",
+                        "numero de comprobante",
+                        "numero de comprobante hasta",
+                        "codigo de documento del comprador",
+                        "numero de identificacion del comprador",
+                        "apellido y nombre o denominacion del comprador",
+                        "importe total de la operacion",
+                        "importe total de conceptos que no integran el precio neto gravado",
+                        "percepcion a no categorizados",
+                        "importe de operaciones exentas",
+                        "importe de percepciones o pagos a cuenta de impuestos nacionales",
+                        "importe de percepciones de ingresos brutos",
+                        "importe de percepciones impuestos municipales",
+                        "importe impuestos internos",
+                        "codigo de moneda",
+                        "tipo de cambio",
+                        "cantidad de alicuotas de iva",
+                        "codigo de operacion",
+                        "otros tributos",
+                        "fecha de vencimiento de pago")''')
+            cur.execute('''CREATE TABLE alicuotas ("tipo de comprobante",
+                        "punto de venta",
+                        "numero de comprobante",
+                        "importe neto gravado",
+                        "alicuota de iva",
+                        "impuesto liquidado")''')
             con.commit()
         except Exception as e:
             print(e)
