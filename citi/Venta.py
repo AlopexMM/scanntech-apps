@@ -5,6 +5,9 @@ comprobantes'''
 # Funcion que devuelve un nro unico formado por valores que se encuentran
 # en ambos reportes
 
+import sqlite3
+
+
 def codigo_unico_cbte_alicuota(data):
     codigo_unico = data['tipo de comprobante'] + \
         data['punto de venta'] + \
@@ -366,6 +369,41 @@ class comprobante:
             return nueva_lista
         except Exception as e:
             print(e)
+    
+    def input_database(self,archivo):
+        try:
+            con = sqlite3.connect('ventas.db')
+            cur = con.cursor()
+            with open(archivo,mode='r', encoding='latin-1') as lista:
+                for linea in lista:
+                    data = self.campos_comprobante(linea)
+                    cur.execute('''INSERT INTO cbte VALUES (
+                        ?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (data['fecha de comprobante'],
+                        data['tipo de comprobante'],
+                        data['punto de venta'],
+                        data['numero de comprobante'],
+                        data['numero de comprobante hasta'],
+                        data['codigo de documento del comprador'],
+                        data['numero de identificacion del comprador'],
+                        data['apellido y nombre o denominacion del comprador'],
+                        data['importe total de la operacion'],
+                        data['importe total de conceptos que no integran el precio neto gravado'],
+                        data['percepcion a no categorizados'],
+                        data['importe de operaciones exentas'],
+                        data['importe de percepciones o pagos a cuenta de impuestos nacionales'],
+                        data['importe de percepciones de ingresos brutos'],
+                        data['importe de percepciones impuestos municipales'],
+                        data['importe impuestos internos'],
+                        data['codigo de moneda'],
+                        data['tipo de cambio'],
+                        data['cantidad de alicuotas de iva'],
+                        data['codigo de operacion'],
+                        data['otros tributos'],
+                        data['fecha de vencimiento de pago']))
+            con.commit()
+            con.close()
+        except Exception as e:
+            print(e)
 
 class alicuota:
 
@@ -420,5 +458,25 @@ class alicuota:
                     if data['punto de venta'] != ptv:
                         nueva_lista.append(self.construir_linea_alicuota(data))
             return nueva_lista
+        except Exception as e:
+            print(e)
+
+    def input_database(self,archivo):
+        try:
+            con = sqlite3.connect('ventas.db')
+            cur = con.cursor()
+            with open(archivo,mode='r', encoding='latin-1') as lista:
+                for linea in lista:
+                    data = self.campos_alicuotas(linea)
+                    cur.execute('''INSERT INTO alicuotas VALUES (
+                        ?,?,?,?,?,?)''', (
+                            data['tipo de comprobante'],
+                            data['punto de venta'],
+                            data['numero de comprobante'],
+                            data['importe neto gravado'],
+                            data['alicuota de iva'],
+                            data['impuesto liquidado']))
+            con.commit()
+            con.close()
         except Exception as e:
             print(e)
