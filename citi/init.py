@@ -93,6 +93,7 @@ class Citi(object):
             con = sqlite3.connect('ventas.db')
             cur = con.cursor()
             cur.execute('''CREATE TABLE cbte (
+                        "fecha de comprobante",
                         "tipo de comprobante",
                         "punto de venta",
                         "numero de comprobante",
