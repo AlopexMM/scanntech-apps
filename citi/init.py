@@ -1,7 +1,7 @@
 import sys
 import sqlite3
 
-from citi import Venta
+from citi import venta
 from citi import Compra
 
 class Citi(object):
@@ -62,20 +62,24 @@ class Citi(object):
 
 
     def run_ventas(self, cbte, ali):
-        comprobante = Venta.comprobante()
-        alicuota = Venta.alicuota()
-        lista_cbte = comprobante.procesamiento_comprobantes(cbte)
-        lista_alicuotas = alicuota.procesamiento_alicuotas(ali)
-        comprobar = Venta.verificaciones()
-        lista_cbte = comprobar.verificar_nro_alicuotas(
-            lista_cbte, lista_alicuotas)
-        lista_cbte = comprobar.verificar_monto_final(
-            lista_cbte, lista_alicuotas)
-        lista_cbte, lista_alicuotas = comprobar.verificar_comprobantes_cero(
-    lista_cbte, lista_alicuotas)
+    #     comprobante = Venta.comprobante()
+    #     alicuota = Venta.alicuota()
+    #     lista_cbte = comprobante.procesamiento_comprobantes(cbte)
+    #     lista_alicuotas = alicuota.procesamiento_alicuotas(ali)
+    #     comprobar = Venta.verificaciones()
+    #     lista_cbte = comprobar.verificar_nro_alicuotas(
+    #         lista_cbte, lista_alicuotas)
+    #     lista_cbte = comprobar.verificar_monto_final(
+    #         lista_cbte, lista_alicuotas)
+    #     lista_cbte, lista_alicuotas = comprobar.verificar_comprobantes_cero(
+    # lista_cbte, lista_alicuotas)
 
-        self._write_file(lista_cbte,'ventas_cbte.txt')
-        self._write_file(lista_alicuotas, 'ventas_alicuotas.txt')
+    #     self._write_file(lista_cbte,'ventas_cbte.txt')
+    #     self._write_file(lista_alicuotas, 'ventas_alicuotas.txt')
+        citi_venta = venta.Venta(cbte, ali)
+        citi_venta.process_cbte_and_alicuota()
+        citi_venta.write_file(filename="ventas_cbte.txt")
+        citi_venta.write_file(filename="ventas_alicuotas.txt")
 
     def remove_ptv(self, ptv, cbte, ali):
         comprobante = Venta.comprobante()
