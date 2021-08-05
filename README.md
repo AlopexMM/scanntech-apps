@@ -10,6 +10,11 @@ Al encontrarse publicado en la Snap store la instalación se realiza a traves de
 El comando de instalación es:
 
 ```bash
+$ sudo snap install --channel=beta scanntech-operaciones
+```
+## Instalación para developer
+
+```bash
 $ sudo snap install --channel=edge scanntech-operaciones
 ```
 
