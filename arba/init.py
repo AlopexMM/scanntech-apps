@@ -53,7 +53,6 @@ class Arba(object):
                l = line.split(';')
                if l[10] == '1':
                    list_cuit[l[4]] = l[8]
-               elif
         return list_cuit
     
     def run(self):

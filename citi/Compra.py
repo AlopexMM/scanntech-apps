@@ -271,7 +271,7 @@ class Verificacion(Comprobante,Alicuota):
             linea_cbte["credito_fiscal_computable"] = cred_fiscal_computable
             
             # Si da cero la suma no debe existir la linea en comprobantes
-            if importe_total == 0:
+            if suma_importe_total == 0:
                 continue
             else:
                 importe_total = suma_importe_total.rjust(15,"0")
