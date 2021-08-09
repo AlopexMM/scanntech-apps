@@ -108,7 +108,7 @@ class Arba(object):
             linea += str(punto_venta).zfill(4)
             # Numero de comprobante
             numero_comprobante = row[4].value
-            linea += str(numero_comprobante).zfill(8)
+            linea += str(numero_comprobante).replace(".","").replace(",","").zfill(8)
             # Obtenemos el importe base
             total = row[10].value
             iva = row[11].value
@@ -124,6 +124,8 @@ class Arba(object):
                 else:
                     alicuota = padron[str(row[7].value)]
                     monto_percibido = monto_base * float(alicuota.replace(',','.')) / 100
+                    if monto_percibido == 0 or monto_percibido == 0.0:
+                        continue    
                     linea += '{:.2f}'.format(monto_percibido).zfill(11)
             else:
                 continue
