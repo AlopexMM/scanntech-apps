@@ -125,8 +125,9 @@ class Arba(object):
                     alicuota = padron[str(row[7].value)]
                     monto_percibido = monto_base * float(alicuota.replace(',','.')) / 100
                     if monto_percibido == 0 or monto_percibido == 0.0:
-                        continue    
-                    linea += '{:.2f}'.format(monto_percibido).zfill(11)
+                        continue
+                    else:
+                        linea += '{:.2f}'.format(monto_percibido).zfill(11)
             else:
                 continue
             # Agregamos el dato de tipo de operacion
