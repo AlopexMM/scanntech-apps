@@ -108,7 +108,7 @@ class Arba(object):
             linea += str(punto_venta).zfill(4)
             # Numero de comprobante
             numero_comprobante = row[4].value
-            linea += str(numero_comprobante).zfill(8)
+            linea += str(numero_comprobante).replace(".","").replace(",","").zfill(8)
             # Obtenemos el importe base
             total = row[10].value
             iva = row[11].value

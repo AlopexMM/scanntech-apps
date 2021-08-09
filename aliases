@@ -1,0 +1,3 @@
+alias scanntech-testing.citi="python $HOME/python_workplace/scanntech-apps/scripts/citi"
+alias scanntech-testing.arba="python $HOME/python_workplace/scanntech-apps/scripts/arba"
+alias scanntech-testing.ater="python $HOME/python_workplace/scanntech-apps/scripts/ater"
