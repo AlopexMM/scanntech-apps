@@ -291,7 +291,7 @@ class Venta:
 		duplicates = []
 		with open(tblerrores, "r", encoding="latin-1") as f:
 			for l in f.readlines():
-				line = l.split(";")
+				line = l.replace("\n","").split(";")
 				if line[0] == 0 or line[0] == "0":
 					e = line[1].split(" ")
 					if e[0] == "COMPROBANTE":
@@ -309,8 +309,15 @@ class Venta:
 		"""Proces file duplicates removing all duplicates and impact one line of VENTA GLOBAL DIARIA"""
 		conn = sqlite3.connect(self.db)
 		cur = conn.cursor()
+		# Move to 082 to process all duplicate lines as a venta global diaria
 		for l in operations:
-			alicuotas = cur.execute("""SELECT tipo_de_comprobante,punto_de_venta,numero_de_comprobante,importe_neto_gravado,alicuota_de_iva,impuesto_liquidado FROM alicuotas WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",(l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
+			cur.execute("""UPDATE alicuotas SET tipo_de_comprobante = '082' WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",(l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
+			conn.commit()
+			cur.execute("""UPDATE cbte SET tipo_de_comprobante = '082' WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",(l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
+			conn.commit()
+		for l in operations:
+			# Process the duplicates operations in alicuotas
+			alicuotas = cur.execute("""SELECT tipo_de_comprobante,punto_de_venta,numero_de_comprobante,importe_neto_gravado,alicuota_de_iva,impuesto_liquidado FROM alicuotas WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",("082",l["punto_venta"],l["numero_operacion"]))
 			cod_alicuota = {
 				"0004":0,
 				"0005":0,
@@ -320,22 +327,23 @@ class Venta:
 			iva105 = Alicuota()
 			iva3 = Alicuota()
 			for row in alicuotas:
-				if row == "0003":
+				if row[4] == "0003":
 					cod_alicuota["0003"] = 1
 					importe_neto_gravado = str(int(iva3.importe_neto_gravado) + int(row[3])).zfill(15)
 					impuesto_liquidado = str(int(iva3.impuesto_liquidado) + int(row[5])).zfill(15)
 					iva3.set_alicuota_data(punto_de_venta=row[1],numero_de_comprobante=row[2],importe_neto_gravado=importe_neto_gravado,alicuota_de_iva="0003",impuesto_liquidado=impuesto_liquidado)
-				if row == "0004":
+				if row[4] == "0004":
 					cod_alicuota["0004"] = 1
 					importe_neto_gravado = str(int(iva105.importe_neto_gravado) + int(row[3])).zfill(15)
 					impuesto_liquidado = str(int(iva105.impuesto_liquidado) + int(row[5])).zfill(15)
 					iva105.set_alicuota_data(punto_de_venta=row[1],numero_de_comprobante=row[2],importe_neto_gravado=importe_neto_gravado,alicuota_de_iva="0004",impuesto_liquidado=impuesto_liquidado)
-				if row == "0005":
+				if row[4] == "0005":
 					cod_alicuota["0005"] = 1
 					importe_neto_gravado = str(int(iva21.importe_neto_gravado) + int(row[3])).zfill(15)
 					impuesto_liquidado = str(int(iva21.impuesto_liquidado) + int(row[5])).zfill(15)
 					iva21.set_alicuota_data(punto_de_venta=row[1],numero_de_comprobante=row[2],importe_neto_gravado=importe_neto_gravado,alicuota_de_iva="0005",impuesto_liquidado=impuesto_liquidado)
-			cur.execute("""DELETE FROM alicuotas WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",(l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
+			# Delete the duplicates operations in alicuotas and insert one with the sum of all duplicates
+			cur.execute("""DELETE FROM alicuotas WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",("082",l["punto_venta"],l["numero_operacion"]))
 			conn.commit()
 			if cod_alicuota["0003"] == 1:
 				cur.execute('''INSERT INTO alicuotas VALUES (?,?,?,?,?,?)''', (
@@ -363,11 +371,15 @@ class Venta:
                             		iva21.impuesto_liquidado))
 			conn.commit()
 			cont_alicuota = 0
-			for x in cod_alicuota:
+
+			for x in cod_alicuota.values():
 				if x == 1:
 					cont_alicuota += x
+			del cod_alicuota
+
+			# Process the duplicates operations in cbte
 			cbtes = cur.execute("""SELECT fecha_de_comprobante,tipo_de_comprobante,punto_de_venta,numero_de_comprobante,numero_de_comprobante_hasta,codigo_de_documento_del_comprador,numero_de_identificacion_del_comprador,apellido_y_nombre_o_denominacion_del_comprador,importe_total_de_la_operacion,importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado,percepcion_a_no_categorizados,importe_de_operaciones_exentas,importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales,importe_de_percepciones_de_ingresos_brutos,importe_de_percepciones_impuestos_municipales,importe_impuestos_internos,tipo_de_cambio,cantidad_de_alicuotas_de_iva,codigo_de_operacion,otros_tributos,fecha_de_vencimiento_de_pago 
-			    FROM cbte WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""", (l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
+			    FROM cbte WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""", ("082",l["punto_venta"],l["numero_operacion"]))
 			cbte = Cbte()
 			
 			for row in cbtes:
@@ -393,8 +405,8 @@ class Venta:
 				importe_de_percepciones_impuestos_municipales = str(importe_de_percepciones_impuestos_municipales).zfill(15),
 				importe_impuestos_internos = str(importe_impuestos_internos).zfill(15),
 				cantidad_de_alicuotas_de_iva=str(cont_alicuota))
-			
-			cur.execute("""DELETE FROM cbte WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",(l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
+			# Delete the duplicates operations in cbte and insert one with the sum of all duplicates
+			cur.execute("""DELETE FROM cbte WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",("082",l["punto_venta"],l["numero_operacion"]))
 			conn.commit()
 			cur.execute('''INSERT INTO cbte VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (
 					cbte.fecha_de_comprobante,
@@ -420,4 +432,16 @@ class Venta:
                         		cbte.otros_tributos,
                         		cbte.fecha_de_vencimiento_de_pago))
 			conn.commit()
-		
+		if len(self.cbte) > 0:
+			self.cbte.clear()
+		if len(self.alicuota) > 0:
+			self.alicuota.clear()
+		for x in cur.execute("""SELECT * FROM cbte;"""):
+			self.cbte.append("".join(x))
+		for x in cur.execute("""SELECT * FROM alicuotas;"""):
+			self.alicuota.append("".join(x))
+		conn.close()
+		self.write_file("ventas_cbte.txt", data_to_use="cbte")
+		self.write_file("ventas_alicuotas.txt")
+		print("Se quitaron los duplicados y se grabaron los archivos ventas_cbte.txt / ventas_alicuotas.txt")
+		return

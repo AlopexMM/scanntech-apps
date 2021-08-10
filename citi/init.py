@@ -30,7 +30,7 @@ class Citi(object):
             ptv = self.argv[2].zfill(5)
             self.remove_ptv(ptv=ptv, cbte=self.argv[3], ali=self.argv[4])
         elif self.argv[1] == '-vd' or self.argv[1] == '--ventas-duplicados':
-            self.remove_ptv(tblerrores=ptv, cbte=self.argv[3], ali=self.argv[4])
+            self.remove_duplicates(tblerrores=self.argv[2], cbte=self.argv[3], ali=self.argv[4])
         elif self.argv[1] == '-dbv' or self.argv[1] == '--database-ventas':
             self.create_database_ventas(cbte=self.argv[2], ali=self.argv[3])
         else:
