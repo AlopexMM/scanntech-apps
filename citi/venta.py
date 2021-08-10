@@ -265,24 +265,39 @@ class Venta:
 			conn.commit()
 			conn.close()
 
-	def process_cbte_and_alicuota(self) -> None:
+	def process_cbte_and_alicuota(self,ptv=None) -> None:
 		"""Process cbte and alicuota
 		   This verified if the number of operation and until operation
 		"""
+		punto_de_venta = None
+		if ptv != None:
+			punto_de_venta = ptv.split(",")
 		try:
 			while True:
 				line_cbte = next(self.cbte_file)
 				cbte = Cbte()
-				cbte.set_cbte_data(line_cbte)
+				cbte.set_cbte_data(data=line_cbte)
 				cbte.numero_de_comprobante = cbte.numero_de_comprobante_hasta
-				key = cbte.fecha_de_comprobante + cbte.tipo_de_comprobante + cbte.punto_de_venta + cbte.numero_de_comprobante
 				alicuota = Alicuota()
-				self.cbte.append(cbte.get_cbte_data())
-				for _ in range(int(cbte.cantidad_de_alicuotas_de_iva)):
-					line_alicuota = next(self.alicuota_file)
-					alicuota.set_alicuota_data(line_alicuota)
-					alicuota.numero_de_comprobante = cbte.numero_de_comprobante_hasta
-					self.alicuota.append(alicuota.get_alicuota_data())
+				if punto_de_venta == None:
+					self.cbte.append(cbte.get_cbte_data())
+					for _ in range(int(cbte.cantidad_de_alicuotas_de_iva)):
+						line_alicuota = next(self.alicuota_file)
+						alicuota.set_alicuota_data(data=line_alicuota)
+						alicuota.numero_de_comprobante = cbte.numero_de_comprobante_hasta
+						self.alicuota.append(alicuota.get_alicuota_data())
+				else:
+					for x in punto_de_venta:
+						x = x.zfill(5)
+						if cbte.punto_de_venta == x:
+							continue							
+						else:
+							self.cbte.append(cbte.get_cbte_data())
+							for _ in range(int(cbte.cantidad_de_alicuotas_de_iva)):
+								line_alicuota = next(self.alicuota_file)
+								alicuota.set_alicuota_data(data=line_alicuota)
+								alicuota.numero_de_comprobante = cbte.numero_de_comprobante_hasta
+								self.alicuota.append(alicuota.get_alicuota_data())
 		except StopIteration:
 			print("Se procesaron los datos correctamente, se procede a grabarlos")
 	

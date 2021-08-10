@@ -27,8 +27,7 @@ class Citi(object):
         elif self.argv[1] == '-v' or self.argv[1] == '--ventas':
             self.run_ventas(cbte=self.argv[2], ali=self.argv[3])
         elif self.argv[1] == '-rmp' or self.argv[1] == '--remove-ptv':
-            ptv = self.argv[2].zfill(5)
-            self.remove_ptv(ptv=ptv, cbte=self.argv[3], ali=self.argv[4])
+            self.remove_ptv(ptv=self.argv[2], cbte=self.argv[3], ali=self.argv[4])
         elif self.argv[1] == '-vd' or self.argv[1] == '--ventas-duplicados':
             self.remove_duplicates(tblerrores=self.argv[2], cbte=self.argv[3], ali=self.argv[4])
         elif self.argv[1] == '-dbv' or self.argv[1] == '--database-ventas':
@@ -39,7 +38,7 @@ class Citi(object):
     def _help(self, args=None):
         msg = """
             -v o --ventas [CBTE] [ALICUOTAS]
-            -rmp o --remove-ptv [PTV] [CBTE] [ALICUOTAS]
+            -rmp o --remove-ptv [PTV] [CBTE] [ALICUOTAS] (Nota para pasar varios se los debe separar con coma Ej: 1,2 punto de venta 1 y 2)
             -dbv o --database-ventas [CBTE] [ALICUOTAS]
             -vd o --ventas-duplicado [tblerrores.txt siap] [CBTE] [ALICUOTAS]
             -c o --compras [CBTE] [ALICUOTAS]
@@ -65,15 +64,12 @@ class Citi(object):
         citi_venta.process_cbte_and_alicuota()
         citi_venta.write_file(filename="ventas_cbte.txt",data_to_use="cbte")
         citi_venta.write_file(filename="ventas_alicuotas.txt")
-#TODO make it work for tecnico sur
-    # def remove_ptv(self, ptv, cbte, ali):
-        # comprobante = Venta.comprobante()
-        # alicuota = Venta.alicuota()
-        # lista_cbte = comprobante.remove_ptv(ptv,cbte)
-        # lista_alicuotas = alicuota.remove_ptv(ptv,ali)
-# 
-        # self._write_file(lista_cbte,'ventas_cbte.txt')
-        # self._write_file(lista_alicuotas, 'ventas_alicuotas.txt')
+    
+    def remove_ptv(self, ptv, cbte, ali):
+        citi_venta = venta.Venta(cbte, ali)
+        citi_venta.process_cbte_and_alicuota(ptv=ptv)
+        citi_venta.write_file(filename="ventas_cbte.txt",data_to_use="cbte")
+        citi_venta.write_file(filename="ventas_alicuotas.txt")
     
     def remove_duplicates(self, tblerrores, cbte, ali):
         citi_venta = venta.Venta(cbte,ali)
