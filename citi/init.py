@@ -22,18 +22,24 @@ class Citi(object):
 
     def run(self):
 
-        if self.argv[1] == '-c' or self.argv[1] == '--compras':
-            self.run_compras(cbte=self.argv[2], ali=self.argv[3])
-        elif self.argv[1] == '-v' or self.argv[1] == '--ventas':
-            self.run_ventas(cbte=self.argv[2], ali=self.argv[3])
-        elif self.argv[1] == '-rmp' or self.argv[1] == '--remove-ptv':
-            self.remove_ptv(ptv=self.argv[2], cbte=self.argv[3], ali=self.argv[4])
-        elif self.argv[1] == '-vd' or self.argv[1] == '--ventas-duplicados':
-            self.remove_duplicates(tblerrores=self.argv[2], cbte=self.argv[3], ali=self.argv[4])
-        elif self.argv[1] == '-dbv' or self.argv[1] == '--database-ventas':
-            self.create_database_ventas(cbte=self.argv[2], ali=self.argv[3])
-        else:
-            self._help(args=self.argv)
+        try:
+
+            if self.argv[1] == '-c' or self.argv[1] == '--compras':
+                self.run_compras(cbte=self.argv[2], ali=self.argv[3])
+            elif self.argv[1] == '-v' or self.argv[1] == '--ventas':
+                self.run_ventas(cbte=self.argv[2], ali=self.argv[3])
+            elif self.argv[1] == '-rmp' or self.argv[1] == '--remove-ptv':
+                self.remove_ptv(ptv=self.argv[2], cbte=self.argv[3], ali=self.argv[4])
+            elif self.argv[1] == '-vd' or self.argv[1] == '--ventas-duplicados':
+                self.remove_duplicates(tblerrores=self.argv[2], cbte=self.argv[3], ali=self.argv[4])
+            elif self.argv[1] == '-dbv' or self.argv[1] == '--database-ventas':
+                self.create_database_ventas(cbte=self.argv[2], ali=self.argv[3])
+            else:
+                self._help(args=self.argv)
+        except IndexError:
+            self._help()
+        except Exception as e:
+            raise e
 
     def _help(self, args=None):
         msg = """
