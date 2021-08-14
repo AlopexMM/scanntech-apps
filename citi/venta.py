@@ -383,6 +383,10 @@ class Venta:
                             		iva21.impuesto_liquidado))
 			conn.commit()
 			cont_alicuota = 0
+			codigo_operacion = " "
+			if cod_alicuota["0003"] == 1:
+				codigo_operacion = "N"
+			 
 
 			for x in cod_alicuota.values():
 				if x == 1:
@@ -416,7 +420,8 @@ class Venta:
 				importe_de_percepciones_de_ingresos_brutos = str(importe_de_percepciones_de_ingresos_brutos).zfill(15),
 				importe_de_percepciones_impuestos_municipales = str(importe_de_percepciones_impuestos_municipales).zfill(15),
 				importe_impuestos_internos = str(importe_impuestos_internos).zfill(15),
-				cantidad_de_alicuotas_de_iva=str(cont_alicuota))
+				cantidad_de_alicuotas_de_iva=str(cont_alicuota),
+				codigo_de_operacion=codigo_operacion)
 			# Delete the duplicates operations in cbte and insert one with the sum of all duplicates
 			cur.execute("""DELETE FROM cbte WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",("082",l["punto_venta"],l["numero_operacion"]))
 			conn.commit()
