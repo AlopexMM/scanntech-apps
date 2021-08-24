@@ -1,6 +1,6 @@
 import sys
-import sqlite3
 
+from zipfile import ZipFile
 from citi import venta
 from citi import Compra
 
@@ -34,6 +34,10 @@ class Citi(object):
                 self.remove_duplicates(tblerrores=self.argv[2], cbte=self.argv[3], ali=self.argv[4])
             elif self.argv[1] == '-dbv' or self.argv[1] == '--database-ventas':
                 self.create_database_ventas(cbte=self.argv[2], ali=self.argv[3])
+            elif self.argv[1] == '-cjoin' or self.argv[1] == "--compras-join":
+                self.join_files(files="compras", args=self.argv[2:])
+            elif self.argv[1] == '-vjoin' or self.argv[1] == "--ventas-join":
+                self.join_files(files="ventas", args=self.argv[2:])
             else:
                 self._help(args=self.argv)
         except IndexError:
@@ -44,10 +48,12 @@ class Citi(object):
     def _help(self, args=None):
         msg = """
             -v o --ventas [CBTE] [ALICUOTAS]
-            -rmp o --remove-ptv [PTV] [CBTE] [ALICUOTAS] (Nota para pasar varios se los debe separar con coma Ej: 1,2 punto de venta 1 y 2)
+            -rmp o --remove-ptv [PTV] [CBTE] [ALICUOTAS]
             -dbv o --database-ventas [CBTE] [ALICUOTAS]
             -vd o --ventas-duplicado [tblerrores.txt siap] [CBTE] [ALICUOTAS]
+            -vjoin o --ventas-join [Archivos Zip]
             -c o --compras [CBTE] [ALICUOTAS]
+            -cjoin o --compras-join [Archivos Zip]
             """
         print(msg)
         if args is not None:
@@ -64,6 +70,37 @@ class Citi(object):
         self._write_file(lista_cbte, 'compras_cbte.txt')
         self._write_file(lista_alicuota, 'compras_alicuotas.txt')
 
+    def join_files(self,args, files):
+        """ Reviza los zip en busca de los archivos txt de las exportaciones y los une en uno solo"""
+        if files == "compras":
+            cbte = "REGINFO_CV_COMPRAS_CBTE.txt"
+            exp_cbte = "compras_cbte.txt"
+            ali = "REGINFO_CV_COMPRAS_ALICUOTAS.txt"
+            exp_ali = "compras_alicuotas.txt"
+        if files == "ventas":
+            cbte = "REGINFO_CV_VENTAS_CBTE.txt"
+            exp_cbte = "ventas_cbte.txt"
+            ali = "REGINFO_CV_VENTAS_ALICUOTAS.txt"
+            exp_ali = "ventas_alicuotas.txt"
+        for z in args:
+            try:
+                with ZipFile(z) as myzipfile:
+                    with myzipfile.open(cbte) as txt:
+                        with open(exp_cbte, mode="a", newline="\r\n") as exp:
+                            text = str(txt.readlines()).replace("'","").replace("[","").replace("]","").replace("b","").replace(",","").split('\\r\\n')[1:]
+                            for l in text:
+                                if l != "":
+                                    l = l[1:] + "\n"
+                                    exp.write(l)
+                    with myzipfile.open(ali) as txt:
+                        with open(exp_ali, mode="a", newline="\r\n") as exp:
+                            text = str(txt.readlines()).replace("'","").replace("[","").replace("]","").replace("b","").replace(",","").split('\\r\\n')[1:]
+                            for l in text:
+                                if l != "":
+                                    l = l[1:] + "\n"
+                                    exp.write(l)
+            except Exception as e:
+                raise e
 
     def run_ventas(self, cbte, ali):
         citi_venta = venta.Venta(cbte, ali)
