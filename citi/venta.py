@@ -420,8 +420,8 @@ class Venta:
 					numero_de_comprobante=q[3],
 					numero_de_comprobante_hasta=q[4],
 					codigo_de_documento_del_comprador=q[5],
-					numero_de_identificacion_del_comprador=q[6];
-					apellido_y_nombre_o_denominacion_del_comprador=q[7];
+					numero_de_identificacion_del_comprador=q[6],
+					apellido_y_nombre_o_denominacion_del_comprador=q[7],
 					importe_total_de_la_operacion = str(q[8]).zfill(15),
 					importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado = str(q[9]).zfill(15),
 					percepcion_a_no_categorizados = str(q[10]).zfill(15),
