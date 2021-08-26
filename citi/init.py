@@ -15,9 +15,6 @@ class Citi(object):
         #   -rmp o --remove-ptv para citi ventas
         #   -dbv o --database-ventas para citi ventas
         #   -vd o --ventas-duplicados 
-        # TODO quitar comprobantes con valor cero de compras
-        #Estas tienen que ir acompañada de dos archivos:
-        #   comprobantes
         self.argv = args[0]
 
     def run(self):
