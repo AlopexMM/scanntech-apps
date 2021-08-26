@@ -59,7 +59,7 @@ class Cbte:
 			self.cantidad_de_alicuotas_de_iva + \
 			self.codigo_de_operacion + \
 			self.otros_tributos + \
-			self.fecha_de_vencimiento_de_pago 
+			self.fecha_de_vencimiento_de_pago
 		return data
 	
 	def set_cbte_data(self, data=None, fecha_de_comprobante=None,tipo_de_comprobante="082",punto_de_venta=None,numero_de_comprobante=None,numero_de_comprobante_hasta=None,codigo_de_documento_del_comprador="99",numero_de_identificacion_del_comprador="00000000000000000000",apellido_y_nombre_o_denominacion_del_comprador="VENTA GLOBAL DIARIA           ",importe_total_de_la_operacion = None,importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado = None,percepcion_a_no_categorizados=None,importe_de_operaciones_exentas=None,importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales=None,importe_de_percepciones_de_ingresos_brutos=None,importe_de_percepciones_impuestos_municipales=None,importe_impuestos_internos=None,codigo_de_moneda="PES",tipo_de_cambio="0001000000",cantidad_de_alicuotas_de_iva=None,codigo_de_operacion=" ",otros_tributos="000000000000000",fecha_de_vencimiento_de_pago="00000000") -> None:
@@ -287,7 +287,7 @@ class Venta:
 					if cbte.punto_de_venta == ptv.zfill(5):
 						for _ in range(int(cbte.cantidad_de_alicuotas_de_iva)):
 							line_alicuota = next(self.alicuota_file)
-						continue							
+						continue
 					else:
 						self.cbte.append(cbte.get_cbte_data())
 						for _ in range(int(cbte.cantidad_de_alicuotas_de_iva)):
@@ -374,53 +374,68 @@ class Venta:
 			codigo_operacion = " "
 			if alicuota_iva3 == 1:
 				codigo_operacion = "N"
-
-			# Process the duplicates operations in cbte
-			cur.execute("""SELECT fecha_de_comprobante,tipo_de_comprobante,punto_de_venta,numero_de_comprobante,numero_de_comprobante_hasta,codigo_de_documento_del_comprador,numero_de_identificacion_del_comprador,apellido_y_nombre_o_denominacion_del_comprador,SUM(importe_total_de_la_operacion),SUM(importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado),SUM(percepcion_a_no_categorizados),SUM(importe_de_operaciones_exentas),SUM(importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales),SUM(importe_de_percepciones_de_ingresos_brutos),SUM(importe_de_percepciones_impuestos_municipales),SUM(importe_impuestos_internos),codigo_de_moneda,tipo_de_cambio,cantidad_de_alicuotas_de_iva,codigo_de_operacion,otros_tributos,fecha_de_vencimiento_de_pago 
-			    FROM cbte WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""", (l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
-
-			query_cbte = set(cur.fetchall())
-			cbte = Cbte()
-			for q in query_cbte:
-				# Delete the duplicates operations in cbte and insert one with the sum of all duplicates
-				cbte.set_cbte_data(fecha_de_comprobante=q[0],tipo_de_comprobante=q[1],punto_de_venta=q[2],numero_de_comprobante=q[3],numero_de_comprobante_hasta=q[4],codigo_de_documento_del_comprador=q[5],numero_de_identificacion_del_comprador=q[6],apellido_y_nombre_o_denominacion_del_comprador=q[7],importe_total_de_la_operacion = str(q[8]).zfill(15),importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado = str(q[9]).zfill(15),percepcion_a_no_categorizados = str(q[10]).zfill(15),importe_de_operaciones_exentas = str(q[11]).zfill(15),importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales = str(q[12]).zfill(15),importe_de_percepciones_de_ingresos_brutos = str(q[13]).zfill(15),importe_de_percepciones_impuestos_municipales = str(q[14]).zfill(15),importe_impuestos_internos = str(q[15]).zfill(15),codigo_de_moneda=q[16],tipo_de_cambio=q[17],cantidad_de_alicuotas_de_iva=str(cont_alicuota),codigo_de_operacion=codigo_operacion,otros_tributos=q[20],fecha_de_vencimiento_de_pago=q[21])
+			if cont_alicuota == 0:
 				cur.execute("""DELETE FROM cbte WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",(l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
-				conn.commit()
-				cur.execute('''INSERT INTO cbte VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (
-					cbte.fecha_de_comprobante,
-                        		cbte.tipo_de_comprobante,
-                        		cbte.punto_de_venta,
-                        		cbte.numero_de_comprobante,
-                        		cbte.numero_de_comprobante_hasta,
-                        		cbte.codigo_de_documento_del_comprador,
-                        		cbte.numero_de_identificacion_del_comprador,
-                        		cbte.apellido_y_nombre_o_denominacion_del_comprador,
-                        		cbte.importe_total_de_la_operacion,
-                        		cbte.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado,
-                        		cbte.percepcion_a_no_categorizados,
-                        		cbte.importe_de_operaciones_exentas,
-                        		cbte.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales,
-                        		cbte.importe_de_percepciones_de_ingresos_brutos,
-                        		cbte.importe_de_percepciones_impuestos_municipales,
-                        		cbte.importe_impuestos_internos,
-                        		cbte.codigo_de_moneda,
-                        		cbte.tipo_de_cambio,
-                        		cbte.cantidad_de_alicuotas_de_iva,
-                        		cbte.codigo_de_operacion,
-                        		cbte.otros_tributos,
-                        		cbte.fecha_de_vencimiento_de_pago))
-				conn.commit()
-			print("{}%".format(count_advance*100.0/total))
+			else:
+				# Process the duplicates operations in cbte
+				cur.execute("""SELECT fecha_de_comprobante,tipo_de_comprobante,punto_de_venta,numero_de_comprobante,numero_de_comprobante_hasta,codigo_de_documento_del_comprador,numero_de_identificacion_del_comprador,apellido_y_nombre_o_denominacion_del_comprador,SUM(importe_total_de_la_operacion),SUM(importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado),SUM(percepcion_a_no_categorizados),SUM(importe_de_operaciones_exentas),SUM(importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales),SUM(importe_de_percepciones_de_ingresos_brutos),SUM(importe_de_percepciones_impuestos_municipales),SUM(importe_impuestos_internos),codigo_de_moneda,tipo_de_cambio,cantidad_de_alicuotas_de_iva,codigo_de_operacion,otros_tributos,fecha_de_vencimiento_de_pago FROM cbte WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""", (l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
+
+				query_cbte = set(cur.fetchall())
+				cbte = Cbte()
+				for q in query_cbte:
+					# Delete the duplicates operations in cbte and insert one with the sum of all duplicates
+					cbte.set_cbte_data(fecha_de_comprobante=q[0],tipo_de_comprobante=q[1],punto_de_venta=q[2],numero_de_comprobante=q[3],numero_de_comprobante_hasta=q[4],codigo_de_documento_del_comprador=q[5],numero_de_identificacion_del_comprador=q[6],apellido_y_nombre_o_denominacion_del_comprador=q[7],importe_total_de_la_operacion = str(q[8]).zfill(15),importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado = str(q[9]).zfill(15),percepcion_a_no_categorizados = str(q[10]).zfill(15),importe_de_operaciones_exentas = str(q[11]).zfill(15),importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales = str(q[12]).zfill(15),importe_de_percepciones_de_ingresos_brutos = str(q[13]).zfill(15),importe_de_percepciones_impuestos_municipales = str(q[14]).zfill(15),importe_impuestos_internos = str(q[15]).zfill(15),codigo_de_moneda=q[16],tipo_de_cambio=q[17],cantidad_de_alicuotas_de_iva=str(cont_alicuota),codigo_de_operacion=codigo_operacion,otros_tributos=q[20],fecha_de_vencimiento_de_pago=q[21])
+					cur.execute("""DELETE FROM cbte WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",(l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
+					conn.commit()
+					cur.execute('''INSERT INTO cbte VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)''', (
+						cbte.fecha_de_comprobante,
+                        			cbte.tipo_de_comprobante,
+                        			cbte.punto_de_venta,
+                        			cbte.numero_de_comprobante,
+                        			cbte.numero_de_comprobante_hasta,
+                        			cbte.codigo_de_documento_del_comprador,
+                        			cbte.numero_de_identificacion_del_comprador,
+                        			cbte.apellido_y_nombre_o_denominacion_del_comprador,
+                        			cbte.importe_total_de_la_operacion,
+                        			cbte.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado,
+                        			cbte.percepcion_a_no_categorizados,
+                        			cbte.importe_de_operaciones_exentas,
+                        			cbte.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales,
+                        			cbte.importe_de_percepciones_de_ingresos_brutos,
+                        			cbte.importe_de_percepciones_impuestos_municipales,
+                        			cbte.importe_impuestos_internos,
+                        			cbte.codigo_de_moneda,
+                        			cbte.tipo_de_cambio,
+                        			cbte.cantidad_de_alicuotas_de_iva,
+                        			cbte.codigo_de_operacion,
+                        			cbte.otros_tributos,
+                        			cbte.fecha_de_vencimiento_de_pago))
+					conn.commit()
+			advance = "{:.2f}%".format(count_advance*100.0/total)
+			if advance == "50.00%":
+				print(advance)
+			elif advance == "100.00%":
+				print(advance)
 		if len(self.cbte) > 0:
 			self.cbte.clear()
 		if len(self.alicuota) > 0:
 			self.alicuota.clear()
-		for x in cur.execute("""SELECT * FROM cbte;"""):
-			self.cbte.append("".join(x))
-		for x in cur.execute("""SELECT * FROM alicuotas;"""):
-			self.alicuota.append("".join(x))
-		conn.close()
-		self.write_file("ventas_cbte.txt", data_to_use="cbte")
-		self.write_file("ventas_alicuotas.txt")
-		print("Se quitaron los duplicados y se grabaron los archivos ventas_cbte.txt / ventas_alicuotas.txt")
+		cur.execute("""DELETE FROM cbte WHERE fecha_de_comprobante is "";""")
+		conn.commit()
+		try:
+			for x in cur.execute("""SELECT * FROM cbte;"""):
+				if x[0] is None:
+					continue
+				else:
+					self.cbte.append("".join(x))
+			for x in cur.execute("""SELECT * FROM alicuotas;"""):
+				self.alicuota.append("".join(x))
+			self.write_file("ventas_cbte.txt", data_to_use="cbte")
+			self.write_file("ventas_alicuotas.txt")
+			print("Se quitaron los duplicados y se grabaron los archivos ventas_cbte.txt / ventas_alicuotas.txt")
+		except Exception as e:
+			print(e)
+			raise e
+		finally:
+			conn.close()
 		return
