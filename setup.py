@@ -3,6 +3,6 @@ from setuptools import setup
 setup(
     packages = ["ater", "arba", "citi"],
     python_requires = ">=3.6",
-    install_requires=["openpyxl>=3", "pyfiglet"],
+    install_requires=["openpyxl>=3", "pyfiglet", "sqlalchemy"],
     scripts = ["scripts/ater","scripts/scanntech-operaciones", "scripts/arba", "scripts/citi"]
 )
