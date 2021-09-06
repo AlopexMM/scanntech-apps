@@ -1,170 +1,146 @@
 # -*- coding: latin-1 -*-
+from sqlalchemy import create_engine
+from sqlalchemy import Table, Column, Integer, String, ForeignKey
+from sqlalchemy.orm import declarative_base, relationship, Session
 
-''' En esta clase se puede encontrar las funciones que modifican el archivo de 
-comprobantes'''
+from sqlalchemy.sql.expression import null
 
-import sqlite3
-import os
+Base = declarative_base()
 from typing import Generator
 
+import os
 
-class Cbte:
-	"""
-	Comprobante object
-	"""
-	def __init__(self):
-		self.fecha_de_comprobante = "00000000"
-		self.tipo_de_comprobante = "082"
-		self.punto_de_venta = "00000"
-		self.numero_de_comprobante = "00000000000000000000"
-		self.numero_de_comprobante_hasta = "00000000000000000000"
-		self.codigo_de_documento_del_comprador = "99"
-		self.numero_de_identificacion_del_comprador = "00000000000000000000"
-		self.apellido_y_nombre_o_denominacion_del_comprador = "VENTA GLOBAL DIARIA           "
-		self.importe_total_de_la_operacion = "000000000000000"
-		self.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado = "000000000000000"
-		self.percepcion_a_no_categorizados = "000000000000000"
-		self.importe_de_operaciones_exentas = "000000000000000"
-		self.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales = "000000000000000"
-		self.importe_de_percepciones_de_ingresos_brutos = "000000000000000"
-		self.importe_de_percepciones_impuestos_municipales = "000000000000000"
-		self.importe_impuestos_internos = "000000000000000"
-		self.codigo_de_moneda = "PES"
-		self.tipo_de_cambio = "0001000000"
-		self.cantidad_de_alicuotas_de_iva = "0"
-		self.codigo_de_operacion = " "
-		self.otros_tributos = "000000000000000"
-		self.fecha_de_vencimiento_de_pago = "00000000"
-		
-	def get_cbte_data(self) -> str:
-		"""Return a line str with the content of variables"""
-		data = self.fecha_de_comprobante + \
-			self.tipo_de_comprobante + \
-			self.punto_de_venta + \
-			self.numero_de_comprobante + \
-			self.numero_de_comprobante_hasta + \
-			self.codigo_de_documento_del_comprador + \
-			self.numero_de_identificacion_del_comprador + \
-			self.apellido_y_nombre_o_denominacion_del_comprador + \
-			self.importe_total_de_la_operacion + \
-			self.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado + \
-			self.percepcion_a_no_categorizados + \
-			self.importe_de_operaciones_exentas + \
-			self.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales + \
-			self.importe_de_percepciones_de_ingresos_brutos + \
-			self.importe_de_percepciones_impuestos_municipales + \
-			self.importe_impuestos_internos + \
-			self.codigo_de_moneda + \
-			self.tipo_de_cambio + \
-			self.cantidad_de_alicuotas_de_iva + \
-			self.codigo_de_operacion + \
-			self.otros_tributos + \
-			self.fecha_de_vencimiento_de_pago
-		return data
-	
-	def set_cbte_data(self, data=None, fecha_de_comprobante=None,tipo_de_comprobante="082",punto_de_venta=None,numero_de_comprobante=None,numero_de_comprobante_hasta=None,codigo_de_documento_del_comprador="99",numero_de_identificacion_del_comprador="00000000000000000000",apellido_y_nombre_o_denominacion_del_comprador="VENTA GLOBAL DIARIA           ",importe_total_de_la_operacion = None,importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado = None,percepcion_a_no_categorizados=None,importe_de_operaciones_exentas=None,importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales=None,importe_de_percepciones_de_ingresos_brutos=None,importe_de_percepciones_impuestos_municipales=None,importe_impuestos_internos=None,codigo_de_moneda="PES",tipo_de_cambio="0001000000",cantidad_de_alicuotas_de_iva=None,codigo_de_operacion=" ",otros_tributos="000000000000000",fecha_de_vencimiento_de_pago="00000000") -> None:
-		"""Set variables in the object"""
-		if data != None:
-			"""This set the variables from a line of text"""
-			self.fecha_de_comprobante = data[0:8]
-			self.tipo_de_comprobante = data[8:11]
-			self.punto_de_venta = data[11:16]
-			self.numero_de_comprobante = data[16:36]
-			self.numero_de_comprobante_hasta = data[36:56]
-			self.codigo_de_documento_del_comprador = data[56:58]
-			self.numero_de_identificacion_del_comprador = data[58:78]
-			self.apellido_y_nombre_o_denominacion_del_comprador = data[78:108]
-			self.importe_total_de_la_operacion = data[108:123]
-			self.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado = data[123:138]
-			self.percepcion_a_no_categorizados = data[138:153]
-			self.importe_de_operaciones_exentas = data[153:168]
-			self.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales = data[168:183]
-			self.importe_de_percepciones_de_ingresos_brutos = data[183:198]
-			self.importe_de_percepciones_impuestos_municipales = data[198:213]
-			self.importe_impuestos_internos = data[213:228]
-			self.codigo_de_moneda = data[228:231]
-			self.tipo_de_cambio = data[231:241]
-			self.cantidad_de_alicuotas_de_iva = data[241:242]
-			self.codigo_de_operacion = data[242:243]
-			self.otros_tributos = data[243:258]
-			self.fecha_de_vencimiento_de_pago = data[258:266]
-			return
-		else:
-			self.fecha_de_comprobante = fecha_de_comprobante
-			self.tipo_de_comprobante = tipo_de_comprobante
-			self.punto_de_venta = punto_de_venta
-			self.numero_de_comprobante = numero_de_comprobante
-			self.numero_de_comprobante_hasta = numero_de_comprobante_hasta
-			self.codigo_de_documento_del_comprador = codigo_de_documento_del_comprador
-			self.numero_de_identificacion_del_comprador = numero_de_identificacion_del_comprador
-			self.apellido_y_nombre_o_denominacion_del_comprador = apellido_y_nombre_o_denominacion_del_comprador
-			self.importe_total_de_la_operacion = importe_total_de_la_operacion
-			self.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado = importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado
-			self.percepcion_a_no_categorizados = percepcion_a_no_categorizados
-			self.importe_de_operaciones_exentas = importe_de_operaciones_exentas
-			self.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales = importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales
-			self.importe_de_percepciones_de_ingresos_brutos = importe_de_percepciones_de_ingresos_brutos
-			self.importe_de_percepciones_impuestos_municipales = importe_de_percepciones_impuestos_municipales
-			self.importe_impuestos_internos = importe_impuestos_internos
-			self.codigo_de_moneda = codigo_de_moneda
-			self.tipo_de_cambio = tipo_de_cambio
-			self.cantidad_de_alicuotas_de_iva = cantidad_de_alicuotas_de_iva
-			self.codigo_de_operacion = codigo_de_operacion
-			self.otros_tributos = otros_tributos
-			self.fecha_de_vencimiento_de_pago = fecha_de_vencimiento_de_pago
-		return
 
-class Alicuota:
-	"""
-	Alicuota object
-	"""
-	def __init__(self) -> None:
-		self.tipo_de_comprobante = "082"
-		self.punto_de_venta = "00000"
-		self.numero_de_comprobante = "00000000000000000000"
-		self.importe_neto_gravado = "000000000000000"
-		self.alicuota_de_iva = "0000"
-		self.impuesto_liquidado = "000000000000000"
+class Cbte(Base):
+    """
+    Cbte object for line_cbtebase
+    """
 
-	def set_alicuota_data(self, data = None, tipo_de_comprobante = "082", punto_de_venta = "00000", numero_de_comprobante = "00000000000000000000", importe_neto_gravado = "000000000000000", alicuota_de_iva = "0000", impuesto_liquidado = "000000000000000") -> None:
-		"""Set data of the object"""
-		if data != None:
-			self.tipo_de_comprobante = data[0:3]
-			self.punto_de_venta = data[3:8]
-			self.numero_de_comprobante = data[8:28]
-			self.importe_neto_gravado = data[28:43]
-			self.alicuota_de_iva = data[43:47]
-			self.impuesto_liquidado = data[47:62]
-			return
-		else:
-			self.tipo_de_comprobante = tipo_de_comprobante
-			self.punto_de_venta = punto_de_venta
-			self.numero_de_comprobante = numero_de_comprobante
-			self.importe_neto_gravado = importe_neto_gravado
-			self.alicuota_de_iva = alicuota_de_iva
-			self.impuesto_liquidado = impuesto_liquidado
-		return
-	
-	def get_alicuota_data(self) -> str:
-		"""Get data string in one line"""
-		data = self.tipo_de_comprobante + \
-			self.punto_de_venta + \
-			self.numero_de_comprobante + \
-			self.importe_neto_gravado + \
-			self.alicuota_de_iva + \
-			self.impuesto_liquidado
-		return data
+    __tablename__ = "ventas_cbte"
+    id = Column(Integer,primary_key=True)
+    id_extra = Column(String(28), nullable=False)
+    fecha_de_comprobante = Column(String(8),nullable=False)
+    tipo_de_comprobante = Column(String(3),nullable=False)
+    punto_de_venta = Column(String(5),nullable=False)
+    numero_de_comprobante = Column(String(20),nullable=False)
+    numero_de_comprobante_hasta = Column(String(20),nullable=False)
+    codigo_de_documento_del_comprador = Column(String(2),nullable=False)
+    numero_de_identificacion_del_comprador = Column(String(20),nullable=False)
+    apellido_y_nombre_o_denominacion_del_comprador = Column(String(30),nullable=False)
+    importe_total_de_la_operacion = Column(String(15),nullable=False)
+    importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado = Column(String(15),nullable=False)
+    percepcion_a_no_categorizados = Column(String(15),nullable=False)
+    importe_de_operaciones_exentas = Column(String(15),nullable=False)
+    importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales = Column(String(15),nullable=False)
+    importe_de_percepciones_de_ingresos_brutos = Column(String(15),nullable=False)
+    importe_de_percepciones_impuestos_municipales = Column(String(15),nullable=False)
+    importe_impuestos_internos = Column(String(15),nullable=False)
+    codigo_de_moneda = Column(String(3),nullable=False)
+    tipo_de_cambio = Column(String(10),nullable=False)
+    cantidad_de_alicuotas_de_iva = Column(String(1),nullable=False)
+    codigo_de_operacion = Column(String(1),nullable=False)
+    otros_tributos = Column(String(15),nullable=False)
+    fecha_de_vencimiento_de_pago = Column(String(8),nullable=False)
+
+    def __repr__(self):
+        message = f"""Cbte(
+            id:{self.id!r},
+            fecha_de_comprobante:{self.fecha_de_comprobante!r},
+            tipo_de_comprobante:{self.tipo_de_comprobante!r},
+            punto_de_venta:{self.punto_de_venta!r},
+            numero_de_comprobante:{self.numero_de_comprobante!r},
+	    numero_de_comprobante_hasta:{self.numero_de_comprobante_hasta!r},
+	    codigo_de_documento_del_comprador = {self.codigo_de_documento_del_comprador!r},
+    	    numero_de_identificacion_del_comprador = {self.numero_de_identificacion_del_comprador!r},
+    	    apellido_y_nombre_o_denominacion_del_comprador = {self.apellido_y_nombre_o_denominacion_del_comprador!r},
+    	    importe_total_de_la_operacion = {self.importe_total_de_la_operacion!r},
+    	    importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado = {self.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado!r},
+    	    percepcion_a_no_categorizados = {self.percepcion_a_no_categorizados!r},
+    	    importe_de_operaciones_exentas = {self.importe_de_operaciones_exentas!r},
+    	    importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales = {self.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales!r},
+    	    importe_de_percepciones_de_ingresos_brutos = {self.importe_de_percepciones_de_ingresos_brutos!r},
+    	    importe_de_percepciones_impuestos_municipales = {self.importe_de_percepciones_impuestos_municipales!r},
+    	    importe_impuestos_internos = {self.importe_impuestos_internos!r}),
+    	    codigo_de_moneda = {self.codigo_de_moneda!r}),
+    	    tipo_de_cambio = {self.tipo_de_cambio!r},
+    	    cantidad_de_alicuotas_de_iva = {self.cantidad_de_alicuotas_de_iva!r},
+    	    codigo_de_operacion = {self.codigo_de_operacion!r},
+    	    otros_tributos = {self.otros_tributos!r},
+    	    fecha_de_vencimiento_de_pago = {self.fecha_de_comprobante!r}
+	    )"""
+        return message 
+
+class Alicuota(Base):
+    """
+    Alicuota object for line_cbtebase
+    """
+    __tablename__ = "ventas_alicuotas"
+    
+    id = Column(Integer,primary_key=True)
+    id_extra = Column(String(28),nullable=False)
+    tipo_de_comprobante = Column(String(3),nullable=False)
+    punto_de_venta = Column(String(5),nullable=False)
+    numero_de_comprobante = Column(String(20),nullable=False)
+    importe_neto_gravado = Column(String(15),nullable=False)
+    alicuota_de_iva = Column(String(4),nullable=False)
+    impuesto_liquidado = Column(String(15),nullable=False)
+
+    def __repr__(self):
+        return f"""Alicuotas(
+		id:{self.id!r},
+		cbte_id:{self.cbte_id!r},
+		cbte_id:{self.cbte_id!r},
+		tipo_de_comprobante:{self.tipo_de_comprobante!r},
+		punto_de_venta:{self.punto_de_venta!r},
+		numero_de_comprobante:{self.numero_de_comprobante!r},
+		importe_neto_gravado:{self.importe_neto_gravado!r},
+		alicuota_de_iva:{self.alicuota_de_iva!r},
+		impuesto_liquidado:{self.impuesto_liquidado!r}
+		)"""
+
 
 class Venta:
 	"""
 	Object to process CBTE and ALICUOTAS files
 	"""
-	def __init__(self, cbte, alicuota):
-		self.cbte_file = self.file_generator(cbte)
-		self.alicuota_file = self.file_generator(alicuota)
-		self.cbte = []
-		self.alicuota = []
-		self.db = "ventas.db"
+	def __init__(self,cbte=None,alicuotas=None):
+		self.engine = create_engine("sqlite+pysqlite:///:memory:")
+		Base.metadata.create_all(self.engine)
+		self.cbte_file = self._file_generator(cbte)
+		self.alicuotas_file = self._file_generator(alicuotas)
+        	self.session = Session(self.engine)
+        	self.cbte_template = {
+                	"fecha_de_comprobante" : "0".zfill(8),
+                	"tipo_de_comprobante" : "082",
+                	"punto_de_venta" : "0".zfill(5),
+                	"numero_de_comprobante" : "0".zfill(20),
+                	"numero_de_comprobante_hasta" : "0".zfill(20),
+                	"codigo_de_documento_del_comprador" : "99",
+                	"numero_de_identificacion_del_comprador" : "0".zfill(20),
+                	"apellido_y_nombre_o_denominacion_del_comprador" : "VENTA GLOBAL DIARIA           ",
+                	"importe_total_de_la_operacion" : 0,
+                	"importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado" : 0,
+                	"percepcion_a_no_categorizados" : 0,
+                	"importe_de_operaciones_exentas" : 0,
+                	"importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales" : 0,
+                	"importe_de_percepciones_de_ingresos_brutos" : 0,
+                	"importe_de_percepciones_impuestos_municipales" : 0,
+                	"importe_impuestos_internos" : 0,
+                	"codigo_de_moneda" : "PES",
+                	"tipo_de_cambio" : "0001000000",
+                	"cantidad_de_alicuotas_de_iva" : "0",
+                	"codigo_de_operacion" : " ",
+                	"otros_tributos" : "0".zfill(15),
+                	"fecha_de_vencimiento_de_pago" : "0".zfill(8),
+        	}	
+        	self.alicuota_template = {
+        	    "tipo_de_comprobante" : "082",
+        	    "punto_de_venta" : "00000",
+        	    "numero_de_comprobante" : "0".zfill(20),
+        	    "importe_neto_gravado" : 0,
+        	    "alicuota_de_iva" : "0".zfill(4),
+        	    "impuesto_liquidado" : 0
+        	}
 
 	def file_generator(self, file) -> Generator:
 		"""Creates a generator from a txt file"""
@@ -325,16 +301,6 @@ class Venta:
 		"""Proces file duplicates removing all duplicates and impact one line of VENTA GLOBAL DIARIA"""
 		conn = sqlite3.connect(self.db)
 		cur = conn.cursor()
-		# Move to 082 to process all duplicate lines as a venta global diaria
-		# TODO se puede utilizar suma de sqlite para evitar errores probar con un script por separado la logica para que se obtenga
-		# una linea se borran las viejas y se modifica la nueva para volver a impactar el dato como una sola linea
-		# alicuotas es quien parece tener la mayoria de los problemas ya que se debe verificar que devuelva algo y sumarizar un contador
-		# para cambiar la cantidad de alicuotas que aparecen en comprobantes de ser necesario
-		# for l in operations:
-		# 	cur.execute("""UPDATE alicuotas SET tipo_de_comprobante = '082' WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",(l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
-			# # conn.commit()
-			# # cur.execute("""UPDATE cbte SET tipo_de_comprobante = '082' WHERE tipo_de_comprobante is ? and punto_de_venta is ? and numero_de_comprobante like ?;""",(l["tipo_operacion"],l["punto_venta"],l["numero_operacion"]))
-			# conn.commit()
 		total = len(operations)
 		count_advance = 0
 		for l in operations:
@@ -346,9 +312,6 @@ class Venta:
 				"0005",
 				"0003",
 			]
-			# iva21 = Alicuota()
-			# iva105 = Alicuota()
-			# iva3 = Alicuota()
 			cont_alicuota = 0
 			alicuota_iva3 = 0
 			for row in cod_alicuota:
