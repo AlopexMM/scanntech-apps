@@ -32,7 +32,7 @@ from pyfiglet import figlet_format
 from subprocess import call as terminal_command
 
 class Ater(object):
-    
+
     def __init__(self, *args):
         self.argv = args[0]
         self.excel_date = datetime(year=1900,month=1, day=1)
@@ -41,23 +41,45 @@ class Ater(object):
         self.motivo = "061"
         self.alicuota = "003.00"
         self.contribuyente_conv_multi = "00"
-    
+
     def help_app(self):
         msg = """\
                 Ater necesita un archivo excel de donde puede sacar los datos en el modulo de reportes
                 se encuentra el reporte \"ater\"
                 """
         print(msg)
-    
+    def _parser_line(self,line):
+        return [line[45:60],line[65:81],line[25:27]]
+
+    def results_of_report(self, report_file):
+        try:
+            totals = {
+                'monto_base' : 0.0,
+                'monto_percibido' : 0.0
+            }
+            with open(report_file,mode="r",encoding="latin-1") as f:
+                for line in f.readlines():
+                    values_of_line = self._parser_line(line)
+                    if values_of_line[2] == "TF":
+                        totals['monto_base'] += float(values_of_line[0])
+                        totals['monto_percibido'] += float(values_of_line[1])
+                    else:
+                        totals['monto_base'] -= float(values_of_line[0])
+                        totals['monto_percibido'] -= float(values_of_line[1])
+            print(totals)
+        except Exception as e:
+            print(e)
+            raise e
+        return
+
     def run(self):
-    
         # Carga de excel
         try:
             wb = load_workbook(self.argv[1])
         except IndexError:
             self.help_app()
             exit()
-        
+
         sheet = wb['0 - Tickets de Clientes con Fac']
         rows = sheet.rows
         next(rows)
@@ -94,13 +116,13 @@ class Ater(object):
             linea += tipo_comprobante
             # Obtenemos la letra de la factura
             letra_comprobante = row[2].value
-            linea += letra_comprobante 
+            linea += letra_comprobante
             # Obtenemos el punto de venta
             punto_venta = int(row[3].value)
             linea += str(punto_venta).zfill(4)
             # Numero de comprobante
             numero_comprobante = row[4].value
-            linea += str(numero_comprobante).zfill(8)
+            linea += str(numero_comprobante).replace(".","").zfill(8)
             # Obtenemos el importe base
             total = row[5].value
             iva = row[6].value
@@ -122,5 +144,6 @@ class Ater(object):
             # Grabamos la linea en un archivo txt
             with open ("ater.txt", mode="a") as ofs:
                 ofs.write(linea+"\r\n")
-        terminal_command("clear")        
+        terminal_command("clear")
+        self.results_of_report("ater.txt")
         print(figlet_format("Archivo procesado"))

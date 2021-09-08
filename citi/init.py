@@ -14,7 +14,7 @@ class Citi(object):
         #   -v o --ventas para citi ventas
         #   -rmp o --remove-ptv para citi ventas
         #   -dbv o --database-ventas para citi ventas
-        #   -vd o --ventas-duplicados 
+        #   -vd o --ventas-duplicados
         self.argv = args[0]
 
     def run(self):
@@ -25,12 +25,6 @@ class Citi(object):
                 self.run_compras(cbte=self.argv[2], ali=self.argv[3])
             elif self.argv[1] == '-v' or self.argv[1] == '--ventas':
                 self.run_ventas(cbte=self.argv[2], ali=self.argv[3])
-            elif self.argv[1] == '-rmp' or self.argv[1] == '--remove-ptv':
-                self.remove_ptv(ptv=self.argv[2], cbte=self.argv[3], ali=self.argv[4])
-            elif self.argv[1] == '-vd' or self.argv[1] == '--ventas-duplicados':
-                self.remove_duplicates(tblerrores=self.argv[2], cbte=self.argv[3], ali=self.argv[4])
-            elif self.argv[1] == '-dbv' or self.argv[1] == '--database-ventas':
-                self.create_database_ventas(cbte=self.argv[2], ali=self.argv[3])
             elif self.argv[1] == '-cjoin' or self.argv[1] == "--compras-join":
                 self.join_files(files="compras", args=self.argv[2:])
             elif self.argv[1] == '-vjoin' or self.argv[1] == "--ventas-join":
@@ -45,9 +39,6 @@ class Citi(object):
     def _help(self, args=None):
         msg = """
             -v o --ventas [CBTE] [ALICUOTAS]
-            -rmp o --remove-ptv [PTV] [CBTE] [ALICUOTAS]
-            -dbv o --database-ventas [CBTE] [ALICUOTAS]
-            -vd o --ventas-duplicado [tblerrores.txt siap] [CBTE] [ALICUOTAS]
             -vjoin o --ventas-join [Archivos Zip]
             -c o --compras [CBTE] [ALICUOTAS]
             -cjoin o --compras-join [Archivos Zip]
@@ -101,28 +92,14 @@ class Citi(object):
 
     def run_ventas(self, cbte, ali):
         citi_venta = venta.Venta(cbte, ali)
-        citi_venta.process_cbte_and_alicuota()
-        citi_venta.write_file(filename="ventas_cbte.txt",data_to_use="cbte")
-        citi_venta.write_file(filename="ventas_alicuotas.txt")
-    
-    def remove_ptv(self, ptv, cbte, ali):
-        citi_venta = venta.Venta(cbte, ali)
-        citi_venta.process_cbte_and_alicuota(ptv=ptv)
-        citi_venta.write_file(filename="ventas_cbte.txt",data_to_use="cbte")
-        citi_venta.write_file(filename="ventas_alicuotas.txt")
-    
-    def remove_duplicates(self, tblerrores, cbte, ali):
-        citi_venta = venta.Venta(cbte,ali)
-        citi_venta.process_cbte_and_alicuota()
-        citi_venta.create_database()
-        citi_venta.process_tbl(tblerrores=tblerrores)
-        
+        citi_venta.run()
 
-    def create_database_ventas(self, cbte, ali):
-        citi_venta = venta.Venta(cbte,ali)
-        citi_venta.process_cbte_and_alicuota()
-        citi_venta.create_database()
-    
+    #def remove_ptv(self, ptv, cbte, ali):
+    #    citi_venta = venta.Venta(cbte, ali)
+    #    citi_venta.process_cbte_and_alicuota(ptv=ptv)
+    #    citi_venta.write_file(filename="ventas_cbte.txt",data_to_use="cbte")
+    #    citi_venta.write_file(filename="ventas_alicuotas.txt")
+
     def _write_file(self, data , filename):
         with open(filename,"w", encoding="latin-1", newline="\r\n") as f:
             for l in data:
