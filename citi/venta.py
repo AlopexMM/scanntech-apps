@@ -155,7 +155,7 @@ class Venta:
         """Write a file in the current location"""
         try:
             with open("ventas_cbte.txt", mode="w", encoding="latin-1",newline="\r\n") as fc:
-                data_c = self.session.query(Cbte).order_by(Cbte.id).all()
+                data_c = self.session.query(Cbte).order_by(Cbte.id_extra).all()
                 for c in data_c:
                     linec = c.fecha_de_comprobante + \
                         c.tipo_de_comprobante + \
@@ -182,7 +182,7 @@ class Venta:
                         "\n"
                     fc.write(linec)
             with open("ventas_alicuotas.txt", "w", encoding="latin-1", newline="\r\n") as fa:
-                data_a = self.session.query(Alicuota).order_by(Alicuota.id).all()
+                data_a = self.session.query(Alicuota).order_by(Alicuota.id_extra).all()
                 for a in data_a:
                     linea = a.tipo_de_comprobante + \
                         a.punto_de_venta + \
@@ -382,6 +382,7 @@ class Venta:
             for alicuota in alicuotas:
                 if alicuota.alicuota_de_iva == "0003":
                     cbte.codigo_de_operacion = "N"
+
             cbte.cantidad_de_alicuotas_de_iva = str(len(alicuotas))
             self.session.flush()
         self.session.commit()
