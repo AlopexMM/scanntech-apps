@@ -12,8 +12,8 @@ class Citi(object):
         #Las opciones que maneja son:
         #   -c o --compras para citi compras
         #   -v o --ventas para citi ventas
+        #   -d o --delete-ptv para eliminar un punto de venta
         #   -rmp o --remove-ptv para citi ventas
-        #   -dbv o --database-ventas para citi ventas
         #   -vd o --ventas-duplicados
         self.argv = args[0]
 
@@ -25,6 +25,8 @@ class Citi(object):
                 self.run_compras(cbte=self.argv[2], ali=self.argv[3])
             elif self.argv[1] == '-v' or self.argv[1] == '--ventas':
                 self.run_ventas(cbte=self.argv[2], ali=self.argv[3])
+            elif self.argv[1] == '-d' or self.argv[1] == '--delete-ptv':
+                self.run_ventas(cbte=self.argv[3], ali=self.argv[4], ptv=self.argv[2])
             elif self.argv[1] == '-cjoin' or self.argv[1] == "--compras-join":
                 self.join_files(files="compras", args=self.argv[2:])
             elif self.argv[1] == '-vjoin' or self.argv[1] == "--ventas-join":
@@ -39,6 +41,7 @@ class Citi(object):
     def _help(self, args=None):
         msg = """
             -v o --ventas [CBTE] [ALICUOTAS]
+            -d o --delete-ptv [PTV] [CBTE] [ALICUOTAS]
             -vjoin o --ventas-join [Archivos Zip]
             -c o --compras [CBTE] [ALICUOTAS]
             -cjoin o --compras-join [Archivos Zip]
@@ -59,7 +62,8 @@ class Citi(object):
         self._write_file(lista_alicuota, 'compras_alicuotas.txt')
 
     def join_files(self,args, files):
-        """ Reviza los zip en busca de los archivos txt de las exportaciones y los une en uno solo"""
+        """ Reviza los zip en busca de los archivos txt de las exportaciones y
+        los une en uno solo"""
         if files == "compras":
             cbte = "REGINFO_CV_COMPRAS_CBTE.txt"
             exp_cbte = "compras_cbte.txt"
@@ -90,15 +94,9 @@ class Citi(object):
             except Exception as e:
                 raise e
 
-    def run_ventas(self, cbte, ali):
-        citi_venta = venta.Venta(cbte, ali)
+    def run_ventas(self, cbte, ali, ptv=-1):
+        citi_venta = venta.Venta(cbte, ali, ptv)
         citi_venta.run()
-
-    #def remove_ptv(self, ptv, cbte, ali):
-    #    citi_venta = venta.Venta(cbte, ali)
-    #    citi_venta.process_cbte_and_alicuota(ptv=ptv)
-    #    citi_venta.write_file(filename="ventas_cbte.txt",data_to_use="cbte")
-    #    citi_venta.write_file(filename="ventas_alicuotas.txt")
 
     def _write_file(self, data , filename):
         with open(filename,"w", encoding="latin-1", newline="\r\n") as f:

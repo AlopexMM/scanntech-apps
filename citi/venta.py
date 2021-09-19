@@ -105,51 +105,17 @@ class Venta:
     """
     Object to process CBTE and ALICUOTAS files
     """
-    def __init__(self,cbte=None,alicuotas=None):
+    def __init__(self,cbte=None,alicuotas=None, ptv=-1):
         try:
             self.engine = create_engine("sqlite+pysqlite:///:memory:")
             Base.metadata.create_all(self.engine)
             self.cbte_file = cbte
             self.alicuotas_file = alicuotas
             self.session = Session(self.engine)
+            self.ptv = ptv
         except Exception as e:
             print(e)
             raise e
-        #self.cbte_template = {
-        #    "id_extra":"",
-        #    "fecha_de_comprobante" : "0".zfill(8),
-        #    "tipo_de_comprobante" : "082",
-        #    "punto_de_venta" : "0".zfill(5),
-        #    "numero_de_comprobante" : "0".zfill(20),
-        #    "numero_de_comprobante_hasta" : "0".zfill(20),
-        #    "codigo_de_documento_del_comprador" : "99",
-        #    "numero_de_identificacion_del_comprador" : "0".zfill(20),
-        #    "apellido_y_nombre_o_denominacion_del_comprador" : "VENTA GLOBAL DIARIA           ",
-        #    "importe_total_de_la_operacion" : 0,
-        #    "importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado" : 0,
-        #    "percepcion_a_no_categorizados" : 0,
-        #    "importe_de_operaciones_exentas" : 0,
-        #    "importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales" : 0,
-        #    "importe_de_percepciones_de_ingresos_brutos" : 0,
-        #    "importe_de_percepciones_impuestos_municipales" : 0,
-        #    "importe_impuestos_internos" : 0,
-        #    "codigo_de_moneda" : "PES",
-        #    "tipo_de_cambio" : "0001000000",
-        #    "cantidad_de_alicuotas_de_iva" : "0",
-        #    "codigo_de_operacion" : " ",
-        #    "otros_tributos" : "0".zfill(15),
-        #    "fecha_de_vencimiento_de_pago" : "0".zfill(8),
-        #}
-        #self.alicuota_template = {
-        #    "id_extra": "",
-        #    "id_alicuota":"",
-        #    "tipo_de_comprobante" : "082",
-        #    "punto_de_venta" : "00000",
-        #    "numero_de_comprobante" : "0".zfill(20),
-        #    "importe_neto_gravado" : 0,
-        #    "alicuota_de_iva" : "0".zfill(4),
-        #    "impuesto_liquidado" : 0
-        #}
 
     def _write_file(self):
         """Write a file in the current location"""
@@ -416,6 +382,17 @@ class Venta:
         self.session.commit()
         return
 
+    def _delete_ptv(self):
+        ptv = str(self.ptv).zfill(5)
+        (self.session.query(Cbte).filter(Cbte.punto_de_venta == ptv)
+         .delete(synchronize_session=False))
+        (self.session.query(Alicuota).filter(Alicuota.punto_de_venta == ptv)
+         .delete(synchronize_session=False))
+        self.session.flush()
+        self.session.commit()
+
+        return
+
 
     def run(self):
         """Execute all the functions necesary"""
@@ -434,6 +411,10 @@ class Venta:
 
         # Check amounts in cbte
         self._check_amounts_in_cbte()
+
+        # Delete PTV
+        if self.ptv != -1:
+            self._delete_ptv()
 
         # Write files
         self._write_file()
