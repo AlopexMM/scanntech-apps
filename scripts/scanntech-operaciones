@@ -26,9 +26,9 @@ from pyfiglet import figlet_format
 msg = """\
     Como utilizar el aplicativo.
     Si llamamos al aplicativo por su nombre scanntech-operaciones veremos este mensaje.
-    
+
     Si queremos utilizar los distintos aplicativos debajo de scanntech-operaciones pondremos scanntech-operaciones.<aplicativo>
-    
+
     Aplicativos actuales
 
     - Ater
@@ -36,11 +36,11 @@ msg = """\
     - Arba
         scanntech-operaciones.arba [EXCEL] [PADRON TXT]
     - Citi
-        -c o --compras [CBTE] [ALICUOTAS]
         -v o --ventas [CBTE] [ALICUOTAS]
-        -dbv o --database-ventas [CBTE] [ALICUOTAS]
-        -rmp o --remove-ptv [PTV] [CBTE] [ALICUOTAS]
-
+        -d o --delete-ptv [PTV] [CBTE] [ALICUOTAS]
+        -vjoin o --ventas-join [Archivos Zip]
+        -c o --compras [CBTE] [ALICUOTAS]
+        -cjoin o --compras-join [Archivos Zip]
     """
 print(figlet_format("Scanntech"))
 
