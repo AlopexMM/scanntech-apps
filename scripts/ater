@@ -24,4 +24,4 @@ from ater import Ater
 from sys import argv
 
 io = Ater(argv)
-io.run() 
+io.run()

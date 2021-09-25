@@ -1,4 +1,25 @@
 # -*- coding: latin-1 -*-
+"""MIT License
+
+Copyright (c) 2020 Mario Mori
+
+Permission is hereby granted, free of charge, to any person obtaining a copy
+of this software and associated documentation files (the "Software"), to deal
+in the Software without restriction, including without limitation the rights
+to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+copies of the Software, and to permit persons to whom the Software is
+furnished to do so, subject to the following conditions:
+
+The above copyright notice and this permission notice shall be included in all
+copies or substantial portions of the Software.
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
+SOFTWARE."""
 from sqlalchemy import create_engine
 from sqlalchemy import Table, Column, Integer, String, ForeignKey
 from sqlalchemy.orm import declarative_base, relationship, Session
@@ -7,14 +28,12 @@ from sqlalchemy.sql.expression import null
 
 Base = declarative_base()
 from typing import Generator
-
+from openpyxl import Workbook
 import os
 import sys
 
 class Cbte(Base):
-    """
-    Cbte object for line_cbtebase
-    """
+    """Cbte object for line_cbtebase"""
 
     __tablename__ = "ventas_cbte"
     id = Column(Integer,primary_key=True)
@@ -67,7 +86,7 @@ class Cbte(Base):
             cantidad_de_alicuotas_de_iva = {self.cantidad_de_alicuotas_de_iva!r},
             codigo_de_operacion = {self.codigo_de_operacion!r},
             otros_tributos = {self.otros_tributos!r},
-            fecha_de_vencimiento_de_pago = {self.fecha_de_comprobante!r}
+            fecha_de_vencimiento_de_pago = {self.fecha_de_vencimiento_de_pago!r}
             )"""
         return message
 
@@ -105,7 +124,7 @@ class Venta:
     """
     Object to process CBTE and ALICUOTAS files
     """
-    def __init__(self,cbte=None,alicuotas=None, ptv=-1):
+    def __init__(self,cbte=None,alicuotas=None, ptv=-1, excel=False):
         try:
             self.engine = create_engine("sqlite+pysqlite:///:memory:")
             Base.metadata.create_all(self.engine)
@@ -113,6 +132,7 @@ class Venta:
             self.alicuotas_file = alicuotas
             self.session = Session(self.engine)
             self.ptv = ptv
+            self.excel = excel
         except Exception as e:
             print(e)
             raise e
@@ -120,46 +140,118 @@ class Venta:
     def _write_file(self):
         """Write a file in the current location"""
         try:
-            with open("ventas_cbte.txt", mode="w", encoding="latin-1",newline="\r\n") as fc:
-                data_c = self.session.query(Cbte).order_by(Cbte.id_extra).all()
+            data_c = self.session.query(Cbte).order_by(Cbte.id_extra).all()
+            data_a = self.session.query(Alicuota).order_by(Alicuota.id_extra).all()
+            if self.excel == False:
+                with open("ventas_cbte.txt", mode="w", encoding="latin-1",newline="\r\n") as fc:
+                    for c in data_c:
+                        linec = c.fecha_de_comprobante + \
+                            c.tipo_de_comprobante + \
+                            c.punto_de_venta + \
+                            c.numero_de_comprobante + \
+                            c.numero_de_comprobante_hasta + \
+                            c.codigo_de_documento_del_comprador + \
+                            c.numero_de_identificacion_del_comprador + \
+                            c.apellido_y_nombre_o_denominacion_del_comprador + \
+                            c.importe_total_de_la_operacion + \
+                            c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado + \
+                            c.percepcion_a_no_categorizados + \
+                            c.importe_de_operaciones_exentas + \
+                            c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales + \
+                            c.importe_de_percepciones_de_ingresos_brutos + \
+                            c.importe_de_percepciones_impuestos_municipales + \
+                            c.importe_impuestos_internos + \
+                            c.codigo_de_moneda + \
+                            c.tipo_de_cambio + \
+                            c.cantidad_de_alicuotas_de_iva + \
+                            c.codigo_de_operacion + \
+                            c.otros_tributos + \
+                            c.fecha_de_vencimiento_de_pago + \
+                            "\n"
+                        fc.write(linec)
+
+                with open("ventas_alicuotas.txt", "w", encoding="latin-1", newline="\r\n") as fa:
+                    for a in data_a:
+                        linea = a.tipo_de_comprobante + \
+                            a.punto_de_venta + \
+                            a.numero_de_comprobante + \
+                            a.importe_neto_gravado + \
+                            a.alicuota_de_iva + \
+                            a.impuesto_liquidado + \
+                            "\n"
+                        fa.write(linea)
+            else:
+                wb = Workbook()
+                dest_filename = "citi_ventas.xlsx"
+                ws1 = wb.active
+                ws1.title = "Cbte"
+                ws1.append([
+                    "fecha_de_comprobante",
+                    "tipo_de_comprobante",
+                    "punto_de_venta",
+                    "numero_de_comprobante",
+                    "numero_de_comprobante_hasta",
+                    "codigo_de_documento_del_comprador",
+                    "numero_de_identificacion_del_comprador",
+                    "apellido_y_nombre_o_denominacion_del_comprador",
+                    "importe_total_de_la_operacion",
+                    "importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado",
+                    "percepcion_a_no_categorizados",
+                    "importe_de_operaciones_exentas",
+                    "importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales",
+                    "importe_de_percepciones_de_ingresos_brutos",
+                    "importe_de_percepciones_impuestos_municipales",
+                    "importe_impuestos_internos",
+                    "codigo_de_moneda",
+                    "tipo_de_cambio",
+                    "cantidad_de_alicuotas_de_iva",
+                    "codigo_de_operacion",
+                    "otros_tributos",
+                    "fecha_de_vencimiento_de_pago"])
                 for c in data_c:
-                    linec = c.fecha_de_comprobante + \
-                        c.tipo_de_comprobante + \
-                        c.punto_de_venta + \
-                        c.numero_de_comprobante + \
-                        c.numero_de_comprobante_hasta + \
-                        c.codigo_de_documento_del_comprador + \
-                        c.numero_de_identificacion_del_comprador + \
-                        c.apellido_y_nombre_o_denominacion_del_comprador + \
-                        c.importe_total_de_la_operacion + \
-                        c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado + \
-                        c.percepcion_a_no_categorizados + \
-                        c.importe_de_operaciones_exentas + \
-                        c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales + \
-                        c.importe_de_percepciones_de_ingresos_brutos + \
-                        c.importe_de_percepciones_impuestos_municipales + \
-                        c.importe_impuestos_internos + \
-                        c.codigo_de_moneda + \
-                        c.tipo_de_cambio + \
-                        c.cantidad_de_alicuotas_de_iva + \
-                        c.codigo_de_operacion + \
-                        c.otros_tributos + \
-                        c.fecha_de_vencimiento_de_pago + \
-                        "\n"
-                    fc.write(linec)
-            with open("ventas_alicuotas.txt", "w", encoding="latin-1", newline="\r\n") as fa:
-                data_a = self.session.query(Alicuota).order_by(Alicuota.id_extra).all()
+                    ws1.append([
+                        c.fecha_de_comprobante,
+                        c.tipo_de_comprobante,
+                        c.punto_de_venta,
+                        c.numero_de_comprobante,
+                        c.numero_de_comprobante_hasta,
+                        c.codigo_de_documento_del_comprador,
+                        c.numero_de_identificacion_del_comprador,
+                        c.apellido_y_nombre_o_denominacion_del_comprador,
+                        f"{int(c.importe_total_de_la_operacion[:-2])}.{c.importe_total_de_la_operacion[-2:]}",
+                        f"{int(c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado[:-2])}.{c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado[-2:]}",
+                        f"{int(c.percepcion_a_no_categorizados[:-2])}.{c.percepcion_a_no_categorizados[-2:]}",
+                        f"{int(c.importe_de_operaciones_exentas[:-2])}.{c.importe_de_operaciones_exentas[-2:]}",
+                        f"{int(c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales[:-2])}.{c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales[-2:]}",
+                        f"{int(c.importe_de_percepciones_de_ingresos_brutos[:-2])}.{c.importe_de_percepciones_de_ingresos_brutos[-2:]}",
+                        f"{int(c.importe_de_percepciones_impuestos_municipales[:-2])}.{c.importe_de_percepciones_impuestos_municipales[-2:]}",
+                        f"{int(c.importe_impuestos_internos[:-2])}.{c.importe_impuestos_internos[-2:]}",
+                        c.codigo_de_moneda,
+                        c.tipo_de_cambio,
+                        c.cantidad_de_alicuotas_de_iva,
+                        c.codigo_de_operacion,
+                        c.otros_tributos,
+                        c.fecha_de_vencimiento_de_pago])
+                ws2 = wb.create_sheet(title="Alicuotas")
+                ws2.append([
+                        "tipo_de_comprobante",
+                        "punto_de_venta",
+                        "numero_de_comprobante",
+                        "importe_neto_gravado",
+                        "alicuota_de_iva",
+                        "impuesto_liquidado"])
                 for a in data_a:
-                    linea = a.tipo_de_comprobante + \
-                        a.punto_de_venta + \
-                        a.numero_de_comprobante + \
-                        a.importe_neto_gravado + \
-                        a.alicuota_de_iva + \
-                        a.impuesto_liquidado + \
-                        "\n"
-                    fa.write(linea)
+                    ws2.append([
+                        a.tipo_de_comprobante,
+                        a.punto_de_venta,
+                        a.numero_de_comprobante,
+                        f"{int(a.importe_neto_gravado[:-2])}.{a.importe_neto_gravado[-2:]}",
+                        a.alicuota_de_iva,
+                        f"{int(a.impuesto_liquidado[:-2])}.{a.impuesto_liquidado[-2:]}"])
+                wb.save(filename=dest_filename)
         except Exception as e:
             print(e)
+            raise e
 
     def _process_cbte_and_alicuota(self):
         """Process cbte and alicuota
@@ -416,7 +508,10 @@ class Venta:
         if self.ptv != -1:
             self._delete_ptv()
 
+        print("Se limpio los datos del reporte.")
         # Write files
         self._write_file()
-
-        print("Se limpio los datos del reporte y se grabaron los mismos.")
+        if self.excel == True:
+            print("Se grabaron los mismos en citi_ventas.xlsx.")
+        else:
+            print("Se grabaron en ventas_cbte.txt y ventas_alicuotas.txt")

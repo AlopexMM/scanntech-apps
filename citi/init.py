@@ -15,6 +15,7 @@ class Citi(object):
         #   -d o --delete-ptv para eliminar un punto de venta
         #   -rmp o --remove-ptv para citi ventas
         #   -vd o --ventas-duplicados
+        #   -ve o --ventas-excel
         self.argv = args[0]
 
     def run(self):
@@ -27,6 +28,8 @@ class Citi(object):
                 self.run_ventas(cbte=self.argv[2], ali=self.argv[3])
             elif self.argv[1] == '-d' or self.argv[1] == '--delete-ptv':
                 self.run_ventas(cbte=self.argv[3], ali=self.argv[4], ptv=self.argv[2])
+            elif self.argv[1] == '-ve' or self.argv[1] == '--ventas-excel':
+                self.run_ventas(cbte=self.argv[2], ali=self.argv[3], excel=True)
             elif self.argv[1] == '-cjoin' or self.argv[1] == "--compras-join":
                 self.join_files(files="compras", args=self.argv[2:])
             elif self.argv[1] == '-vjoin' or self.argv[1] == "--ventas-join":
@@ -43,6 +46,7 @@ class Citi(object):
             -v o --ventas [CBTE] [ALICUOTAS]
             -d o --delete-ptv [PTV] [CBTE] [ALICUOTAS]
             -vjoin o --ventas-join [Archivos Zip]
+            -ve o --ventas-excel [CBTE] [ALICUOTAS]
             -c o --compras [CBTE] [ALICUOTAS]
             -cjoin o --compras-join [Archivos Zip]
             """
@@ -94,8 +98,8 @@ class Citi(object):
             except Exception as e:
                 raise e
 
-    def run_ventas(self, cbte, ali, ptv=-1):
-        citi_venta = venta.Venta(cbte, ali, ptv)
+    def run_ventas(self, cbte, ali, ptv=-1,excel=False):
+        citi_venta = venta.Venta(cbte, ali, ptv, excel)
         citi_venta.run()
 
     def _write_file(self, data , filename):

@@ -39,6 +39,7 @@ msg = """\
         -v o --ventas [CBTE] [ALICUOTAS]
         -d o --delete-ptv [PTV] [CBTE] [ALICUOTAS]
         -vjoin o --ventas-join [Archivos Zip]
+        -ve o --ventas-excel [CBTE] [ALICUOTAS]
         -c o --compras [CBTE] [ALICUOTAS]
         -cjoin o --compras-join [Archivos Zip]
     """
