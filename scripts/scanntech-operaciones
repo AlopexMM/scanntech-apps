@@ -33,6 +33,8 @@ msg = """\
 
     - Ater
         scanntech-operaciones.ater [EXCEL]
+            Opocional de querer el viejo reporte de ater correr:
+                scanntech-operaciones.ater old [EXCEL]
     - Arba
         scanntech-operaciones.arba [EXCEL] [PADRON TXT]
     - Citi
