@@ -218,14 +218,14 @@ class Venta:
                         c.codigo_de_documento_del_comprador,
                         c.numero_de_identificacion_del_comprador,
                         c.apellido_y_nombre_o_denominacion_del_comprador,
-                        f"{int(c.importe_total_de_la_operacion[:-2])}.{c.importe_total_de_la_operacion[-2:]}",
-                        f"{int(c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado[:-2])}.{c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado[-2:]}",
-                        f"{int(c.percepcion_a_no_categorizados[:-2])}.{c.percepcion_a_no_categorizados[-2:]}",
-                        f"{int(c.importe_de_operaciones_exentas[:-2])}.{c.importe_de_operaciones_exentas[-2:]}",
-                        f"{int(c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales[:-2])}.{c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales[-2:]}",
-                        f"{int(c.importe_de_percepciones_de_ingresos_brutos[:-2])}.{c.importe_de_percepciones_de_ingresos_brutos[-2:]}",
-                        f"{int(c.importe_de_percepciones_impuestos_municipales[:-2])}.{c.importe_de_percepciones_impuestos_municipales[-2:]}",
-                        f"{int(c.importe_impuestos_internos[:-2])}.{c.importe_impuestos_internos[-2:]}",
+                        f"{int(c.importe_total_de_la_operacion[:-2])},{c.importe_total_de_la_operacion[-2:]}",
+                        f"{int(c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado[:-2])},{c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado[-2:]}",
+                        f"{int(c.percepcion_a_no_categorizados[:-2])},{c.percepcion_a_no_categorizados[-2:]}",
+                        f"{int(c.importe_de_operaciones_exentas[:-2])},{c.importe_de_operaciones_exentas[-2:]}",
+                        f"{int(c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales[:-2])},{c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales[-2:]}",
+                        f"{int(c.importe_de_percepciones_de_ingresos_brutos[:-2])},{c.importe_de_percepciones_de_ingresos_brutos[-2:]}",
+                        f"{int(c.importe_de_percepciones_impuestos_municipales[:-2])},{c.importe_de_percepciones_impuestos_municipales[-2:]}",
+                        f"{int(c.importe_impuestos_internos[:-2])},{c.importe_impuestos_internos[-2:]}",
                         c.codigo_de_moneda,
                         c.tipo_de_cambio,
                         c.cantidad_de_alicuotas_de_iva,
@@ -245,9 +245,9 @@ class Venta:
                         a.tipo_de_comprobante,
                         a.punto_de_venta,
                         a.numero_de_comprobante,
-                        f"{int(a.importe_neto_gravado[:-2])}.{a.importe_neto_gravado[-2:]}",
+                        f"{int(a.importe_neto_gravado[:-2])},{a.importe_neto_gravado[-2:]}",
                         a.alicuota_de_iva,
-                        f"{int(a.impuesto_liquidado[:-2])}.{a.impuesto_liquidado[-2:]}"])
+                        f"{int(a.impuesto_liquidado[:-2])},{a.impuesto_liquidado[-2:]}"])
                 wb.save(filename=dest_filename)
         except Exception as e:
             print(e)
