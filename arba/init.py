@@ -29,7 +29,6 @@ from time import strftime
 from afip.cuit import Cuit
 from sys import exit
 from subprocess import call as terminal_command
-from pyfiglet import figlet_format
 
 class Arba(object):
 
@@ -37,7 +36,7 @@ class Arba(object):
         self.argv = args[0]
         self.excel_date = datetime(year=1900,month=1,day=1)
         self.cuit = Cuit()
-    
+
     def help_app(self):
         msg = """\
             Arba necesita un archivo excel de donde puede sacar los datos de las facturas
@@ -45,24 +44,25 @@ class Arba(object):
             por estos archivos
             """
         print(msg)
-    
-    def __cuits_arba(self, file):
-        with open(file, mode='r') as f:
-           list_cuit = dict()
-           for line in f.readlines():
-               l = line.split(';')
-               if l[10] == '1':
-                   list_cuit[l[4]] = l[8]
-        return list_cuit
-    
+
+    #def __cuits_arba(self, file):
+    #    with open(file, mode='r') as f:
+    #       list_cuit = dict()
+    #       for line in f.readlines():
+    #           l = line.replace('\n','').split(';')
+    #           #print(l)
+    #           if l[10] == '1':
+    #               list_cuit[l[4]] = l[8]
+    #    return list_cuit
+
     def run(self):
         try:
             wb = load_workbook(self.argv[1])
-            padron = self.__cuits_arba(self.argv[2])
+            #padron = self.__cuits_arba(self.argv[2])
         except IndexError:
             self.help_app()
             exit()
-        
+
 
         sheet = wb['0 - Tickets de Clientes con Fac']
         rows = sheet.rows
@@ -71,6 +71,7 @@ class Arba(object):
         next(rows)
         for row in rows:
             linea = ""
+            cuit = ""
             # Verifico si se encuentra vacia la fecha, de ser None se termina el for
             if row[0].value == None:
                 break
@@ -79,8 +80,9 @@ class Arba(object):
                 cuit = str(row[7].value)
                 if self.cuit.verificador(str(row[7].value).replace('.','')):
                     cuit = str(row[7].value).replace('.','')
-                    cuit = f'{cuit[0:2]}-{cuit[2:10]}-{cuit[10:]}'
+                    cuit = "{0}-{1}-{2}".format(cuit[0:2],cuit[2:10],cuit[10:])
                     linea += cuit
+            #        print("1-{0}".format(linea))
                 else:
                     continue
             except TypeError:
@@ -95,6 +97,7 @@ class Arba(object):
                     dia = row[0].value
                     fecha_percepcion = dia.strftime("%d/%m/%Y")
                     linea += fecha_percepcion
+            #print("2-{}".format(linea))
             if row[3].value == "FACTURA":
                 tipo_comprobante = "F"
             elif row[3].value == "NOTA DE CREDITO":
@@ -117,26 +120,35 @@ class Arba(object):
             else:
                 monto_base = float(total) - float(iva)
                 linea += "{:.2f}".format(monto_base).zfill(12)
+            #print("3-{}".format(linea))
             # Obtenemos el importe percibido
-            if row[7].value in padron.keys():
-                if padron[str(row[7].value)] == '0.00':
-                    continue
-                else:
-                    alicuota = padron[str(row[7].value)]
-                    monto_percibido = monto_base * float(alicuota.replace(',','.')) / 100
-                    if monto_percibido == 0 or monto_percibido == 0.0:
-                        continue
-                    else:
-                        linea += '{:.2f}'.format(monto_percibido).zfill(11)
-            else:
+            # NO ESTA FUNCIONANDO ESTA PORCION DE CODIGO
+            #if cuit in padron.keys():
+            #    if padron[str(row[7].value)] == '0.00':
+            #        continue
+            #    else:
+            #        alicuota = padron[str(row[7].value)]
+            #        monto_percibido = monto_base * float(alicuota.replace(',','.')) / 100
+            #        if monto_percibido == 0 or monto_percibido == 0.0:
+            #            continue
+            #        else:
+            #            linea += '{:.2f}'.format(monto_percibido).zfill(11)
+            #else:
+            #    continue
+            # END
+            monto_percibido = float(str(row[9].value).replace(',','.'))
+            if int(monto_percibido) == 0:
                 continue
+            else:
+                linea += '{:.2f}'.format(monto_percibido).zfill(11)
+            #print("4-{}".format(linea))
             # Agregamos el dato de tipo de operacion
             linea += 'A'
             # Grabamos la linea en un archivo txt
-            with open("arba.txt", mode="a") as ofs:
-                ofs.write(linea+"\r\n")
-        terminal_command("clear")
-        print(figlet_format("Archivo procesado"))
+            with open("arba.txt", mode="a", newline="\r\n") as ofs:
+                ofs.write(linea+"\n")
+        #terminal_command("clear")
+        print("Archivo procesado")
 
 
 if __name__ == '__main__':

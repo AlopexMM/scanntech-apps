@@ -29,11 +29,9 @@ from datetime import datetime, timedelta
 from time import strftime
 from afip.cuit import Cuit
 from sys import exit
-from pyfiglet import figlet_format
-from subprocess import call as terminal_command
 from sqlalchemy import create_engine
-from sqlalchemy import Table, Column, Integer, String, ForeignKey
-from sqlalchemy.orm import declarative_base, relationship, Session
+from sqlalchemy import Column, Integer, String
+from sqlalchemy.orm import declarative_base, Session
 
 from sqlalchemy.sql.expression import null
 
@@ -75,7 +73,7 @@ class OldAter(Base):
         return message
 
     def line(self):
-        return f"""{self.tipo_de_agente}{self.motivo_movimiento}{self.cuit_cliente}{self.fecha_percepcion}{self.tipo_de_comprobante}{self.letra_comprobante}{self.numero_de_comprobante}{self.importe_base}{self.alicuota}{self.importe_percibido}{self.anulacion}{self.contribuyente_conv_multi}'\n'"""
+        return f"""{self.tipo_de_agente}{self.motivo_movimiento}{self.cuit_cliente}{self.fecha_percepcion}{self.tipo_de_comprobante}{self.letra_comprobante}{self.numero_de_comprobante}{self.importe_base}{self.alicuota}{self.importe_percibido}{self.anulacion}{self.contribuyente_conv_multi}\n"""
 
 class NewAter(Base):
     """New Model of ater"""
@@ -109,7 +107,7 @@ class NewAter(Base):
 
     def line(self):
         numero_renglon = str(self.id).zfill(5)
-        return f"""{numero_renglon},{self.tipo_de_comprobante},{self.letra_comprobante},{self.numero_de_comprobante},{self.cuit_cliente},{self.fecha_percepcion},{self.monto_sujeto_a_percepcion},{self.alicuota},{self.monto_percibido},{self.tipo_de_regimen_de_percepcion},{self.jurisdiccion}'\n'"""
+        return f"""{numero_renglon},{self.tipo_de_comprobante},{self.letra_comprobante},{self.numero_de_comprobante},{self.cuit_cliente},{self.fecha_percepcion},{self.monto_sujeto_a_percepcion},{self.alicuota},{self.monto_percibido},{self.tipo_de_regimen_de_percepcion},{self.jurisdiccion}\n"""
 
 
 class Ater(object):

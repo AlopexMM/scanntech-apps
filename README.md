@@ -1,4 +1,4 @@
-# Scanntech-apps
+# scanntech-operaciones
 
 Contiene aplicaciones de consola para procesar reportes que desarrollo aun no a terminado para BE.
 De esta manera el lider puede dar una mejor respuesta a los clientes que se encuentran en su cartera
