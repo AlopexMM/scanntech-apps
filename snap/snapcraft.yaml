@@ -43,4 +43,4 @@ parts:
       - wheel
       - setuptools
       - git+https://github.com/AlopexMM/fiscal-tools.git # Install from a git repo
-    source: .
+    source: https://github.com/AlopexMM/scanntech-apps.git
