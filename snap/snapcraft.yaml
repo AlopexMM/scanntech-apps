@@ -44,3 +44,7 @@ parts:
       - setuptools
       - git+https://github.com/AlopexMM/fiscal-tools.git # Install from a git repo
     source: https://github.com/AlopexMM/scanntech-apps.git
+
+architectures:
+  - build-on: amd64
+    run-on: amd64
