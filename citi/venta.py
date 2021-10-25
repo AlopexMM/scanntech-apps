@@ -31,6 +31,7 @@ from typing import Generator
 from openpyxl import Workbook
 import os
 import sys
+import pdb
 
 class Cbte(Base):
     """Cbte object for line_cbtebase"""
@@ -218,14 +219,14 @@ class Venta:
                         c.codigo_de_documento_del_comprador,
                         c.numero_de_identificacion_del_comprador,
                         c.apellido_y_nombre_o_denominacion_del_comprador,
-                        float(f"{int(c.importe_total_de_la_operacion[:-2])}.{c.importe_total_de_la_operacion[-2:]}"),
-                        float(f"{int(c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado[:-2])}.{c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado[-2:]}"),
-                        float(f"{int(c.percepcion_a_no_categorizados[:-2])}.{c.percepcion_a_no_categorizados[-2:]}"),
-                        float(f"{int(c.importe_de_operaciones_exentas[:-2])}.{c.importe_de_operaciones_exentas[-2:]}"),
-                        float(f"{int(c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales[:-2])}.{c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales[-2:]}"),
-                        float(f"{int(c.importe_de_percepciones_de_ingresos_brutos[:-2])}.{c.importe_de_percepciones_de_ingresos_brutos[-2:]}"),
-                        float(f"{int(c.importe_de_percepciones_impuestos_municipales[:-2])}.{c.importe_de_percepciones_impuestos_municipales[-2:]}"),
-                        float(f"{int(c.importe_impuestos_internos[:-2])}.{c.importe_impuestos_internos[-2:]}"),
+                        float(f"{c.importe_total_de_la_operacion[:-2]}.{c.importe_total_de_la_operacion[-2:]}"),
+                        float(f"{c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado[:-2]}.{c.importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado[-2:]}"),
+                        float(f"{c.percepcion_a_no_categorizados[:-2]}.{c.percepcion_a_no_categorizados[-2:]}"),
+                        float(f"{c.importe_de_operaciones_exentas[:-2]}.{c.importe_de_operaciones_exentas[-2:]}"),
+                        float(f"{c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales[:-2]}.{c.importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales[-2:]}"),
+                        float(f"{c.importe_de_percepciones_de_ingresos_brutos[:-2]}.{c.importe_de_percepciones_de_ingresos_brutos[-2:]}"),
+                        float(f"{c.importe_de_percepciones_impuestos_municipales[:-2]}.{c.importe_de_percepciones_impuestos_municipales[-2:]}"),
+                        float(f"{c.importe_impuestos_internos[:-2]}.{c.importe_impuestos_internos[-2:]}"),
                         c.codigo_de_moneda,
                         c.tipo_de_cambio,
                         c.cantidad_de_alicuotas_de_iva,
@@ -245,9 +246,9 @@ class Venta:
                         a.tipo_de_comprobante,
                         a.punto_de_venta,
                         a.numero_de_comprobante,
-                        float(f"{int(a.importe_neto_gravado[:-2])}.{a.importe_neto_gravado[-2:]}"),
+                        float(f"{a.importe_neto_gravado[:-2]}.{a.importe_neto_gravado[-2:]}"),
                         a.alicuota_de_iva,
-                        float(f"{int(a.impuesto_liquidado[:-2])}.{a.impuesto_liquidado[-2:]}")])
+                        float(f"{a.impuesto_liquidado[:-2]}.{a.impuesto_liquidado[-2:]}")])
                 wb.save(filename=dest_filename)
         except Exception as e:
             print(e)
@@ -260,6 +261,10 @@ class Venta:
         try:
             with open(self.cbte_file,mode="r",encoding="latin-1") as f:
                 for line_cbte in f.readlines():
+                    if line_cbte[168:183] == "0".zfill(15):
+                        nuevo_importe_impuestos_internos = line_cbte[213:228]
+                    else:
+                        nuevo_importe_impuestos_internos = line_cbte[168:183]
                     cbte = Cbte(
                         id_extra = line_cbte[8:36],
                         fecha_de_comprobante = line_cbte[0:8],
@@ -274,10 +279,12 @@ class Venta:
                         importe_total_de_conceptos_que_no_integran_el_precio_neto_gravado = line_cbte[123:138],
                         percepcion_a_no_categorizados = line_cbte[138:153],
                         importe_de_operaciones_exentas = line_cbte[153:168],
-                        importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales = line_cbte[168:183],
+                        # Esto queda harcodeado hasta que se resuelva el jira
+                        # https://scanntechuy.atlassian.net/servicedesk/customer/portal/3/SN3-2384
+                        importe_de_percepciones_o_pagos_a_cuenta_de_impuestos_nacionales = "0".zfill(15), # line_cbte[168:183],
                         importe_de_percepciones_de_ingresos_brutos = line_cbte[183:198],
                         importe_de_percepciones_impuestos_municipales = line_cbte[198:213],
-                        importe_impuestos_internos = line_cbte[213:228],
+                        importe_impuestos_internos = nuevo_importe_impuestos_internos, # line_cbte[213:228] cuando se resuelva el jira antes mencionado
                         codigo_de_moneda = line_cbte[228:231],
                         tipo_de_cambio = line_cbte[231:241],
                         cantidad_de_alicuotas_de_iva = line_cbte[241:242],
@@ -447,6 +454,7 @@ class Venta:
         return
 
     def _check_amounts_in_cbte(self):
+        """ Replace the total amounts because some ticket were duplicates"""
         cbtes = self.session.query(Cbte).all()
         for cbte in cbtes:
             alicuotas = self.session.query(Alicuota).filter(cbte.id_extra == Alicuota.id_extra).all()
@@ -469,11 +477,32 @@ class Venta:
                     int(cbte.importe_impuestos_internos)
                 ]
             )
-            cbte.importe_total_de_la_operacion = str(total_amount).zfill(15)
-            self.session.flush()
+            #cbte.importe_total_de_la_operacion = str(total_amount).zfill(15)
+            self.session.query(Cbte).filter(Cbte.id == cbte.id).update(
+                {
+                    Cbte.importe_total_de_la_operacion : str(total_amount).zfill(15)
+                },
+            synchronize_session = False
+            )
+            self.session.commit()
+        return
+# El codigo marcado con #------# es codigo que debe ser revisado cuando se resuelva los jiras
+# https://scanntechuy.atlassian.net/servicedesk/customer/portal/3/SN3-2384
+# https://scanntechuy.atlassian.net/servicedesk/customer/portal/3/SN3-2385
+#-----------------------------------------------------------------------------------------------------------#
+    def _fix_internal_taxes(self):
+        query_search = "0".zfill(15)
+        cbtes = self.session.query(Cbte).filter(Cbte.importe_impuestos_internos != query_search).all()
+        for cbte in cbtes:
+            alicuotas = self.session.query(Alicuota).filter(cbte.id_extra == Alicuota.id_extra).all()
+            for alicuota in alicuotas:
+                if alicuota.alicuota_de_iva == "0005":
+                    importe_neto_gravado = int(alicuota.importe_neto_gravado) - int(cbte.importe_impuestos_internos)
+                    alicuota.importe_neto_gravado = str(importe_neto_gravado).zfill(15)
+                self.session.flush()
         self.session.commit()
         return
-
+#-----------------------------------------------------------------------------------------------------------#
     def _delete_ptv(self):
         ptv = str(self.ptv).zfill(5)
         (self.session.query(Cbte).filter(Cbte.punto_de_venta == ptv)
@@ -504,6 +533,9 @@ class Venta:
 
             # Audit the amount of alicuotas
             self._audit_amount_alicuotas()
+
+            # Hasta que se resuelvan los jiras SN3-2384 y SN3-2385
+            self._fix_internal_taxes()
 
             # Check amounts in cbte
             self._check_amounts_in_cbte()
