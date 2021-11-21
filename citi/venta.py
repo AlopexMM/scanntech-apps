@@ -208,7 +208,16 @@ class Venta:
                     "cantidad_de_alicuotas_de_iva",
                     "codigo_de_operacion",
                     "otros_tributos",
-                    "fecha_de_vencimiento_de_pago"])
+                    "fecha_de_vencimiento_de_pago",
+                    "monto_neto_gravado_fact_105",
+                    "monto_neto_gravado_fact_21",
+                    "debito_fiscal_fact_105",
+                    "debito_fiscal_fact_21",
+                    "monto_neto_gravado_cf_105",
+                    "monto_neto_gravado_cf_21",
+                    "debito_fiscal_cf_105",
+                    "debito_fiscal_cf_21"
+                ])
                 for c in data_c:
                     ws1.append([
                         c.fecha_de_comprobante,
@@ -234,7 +243,6 @@ class Venta:
                         c.otros_tributos,
                         c.fecha_de_vencimiento_de_pago])
                 ws2 = wb.create_sheet(title="Alicuotas")
-                    # TODO Agregar los siguientes campos "Total fact gravado 10.5","total fact gravado 21", "total alicuota fact 10.5" y "total alicuota fact 21" 
 
                 ws2.append([
                         "tipo_de_comprobante",
@@ -243,11 +251,16 @@ class Venta:
                         "importe_neto_gravado",
                         "alicuota_de_iva",
                         "impuesto_liquidado",
-                        "total_fact_gravado_105",
-                        "total_fact_gravado_21",
-                        "total_alicuota_fact_105",
-                        "total_alicuota_fact_21"
+                        "monto_neto_gravado_fact_105",
+                        "monto_neto_gravado_fact_21",
+                        "debito_fiscal_fact_105",
+                        "debito_fiscal_fact_21",
+                        "monto_neto_gravado_cf_105",
+                        "monto_neto_gravado_cf_21",
+                        "debito_fiscal_cf_105",
+                        "debito_fiscal_cf_21"
                 ])
+                cont = 2
                 for a in data_a:
                     ws2.append([
                         a.tipo_de_comprobante,
@@ -255,7 +268,17 @@ class Venta:
                         a.numero_de_comprobante,
                         float(f"{a.importe_neto_gravado[:-2]}.{a.importe_neto_gravado[-2:]}"),
                         a.alicuota_de_iva,
-                        float(f"{a.impuesto_liquidado[:-2]}.{a.impuesto_liquidado[-2:]}")])
+                        float(f"{a.impuesto_liquidado[:-2]}.{a.impuesto_liquidado[-2:]}"),
+                        f'=IF(OR(A{cont}="081",A{cont}="112"),IF(E{cont}="0004",D{cont},0),0)',
+                        f'=IF(OR(A{cont}="081",A{cont}="112"),IF(E{cont}="0005",D{cont},0),0)',
+                        f'=IF(OR(A{cont}="081",A{cont}="112"),IF(E{cont}="0004",F{cont},0),0)',
+                        f'=IF(OR(A{cont}="081",A{cont}="112"),IF(E{cont}="0005",F{cont},0),0)',
+                        f'=IF(OR(A{cont}="082",A{cont}="113"),IF(E{cont}="0004",D{cont},0),0)',
+                        f'=IF(OR(A{cont}="082",A{cont}="113"),IF(E{cont}="0005",D{cont},0),0)',
+                        f'=IF(OR(A{cont}="082",A{cont}="113"),IF(E{cont}="0004",D{cont},0),0)',
+                        f'=IF(OR(A{cont}="082",A{cont}="113"),IF(E{cont}="0005",F{cont},0),0)'
+                    ])
+                    cont+=1
                 wb.save(filename=dest_filename)
         except Exception as e:
             print(e)
