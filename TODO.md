@@ -1,3 +1,5 @@
-# Tests
-
-Trasladar todos los test a pytest
+- Trasladar todos los test a pytest
+- Transfer the class Compra a alicuota, cbte y compra
+- Must use sqlite as a database
+- cbte and alicuota need to have a method returning a line with the format of citi compras
+- Add the totals to excel function and add a process excel to citi ventas

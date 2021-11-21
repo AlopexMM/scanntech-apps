@@ -40,8 +40,6 @@ class Arba(object):
     def help_app(self):
         msg = """\
             Arba necesita un archivo excel de donde puede sacar los datos de las facturas
-            y el padron que se le entrega a Uy, consultar a dgiovagnoli@scanntech.com o mmori@scanntech.com
-            por estos archivos
             """
         print(msg)
 
@@ -57,7 +55,7 @@ class Arba(object):
 
     def run(self):
         try:
-            wb = load_workbook(self.argv[1])
+            wb = load_workbook(self.argv[1], read_only=True)
             #padron = self.__cuits_arba(self.argv[2])
         except IndexError:
             self.help_app()

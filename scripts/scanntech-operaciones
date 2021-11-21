@@ -36,7 +36,7 @@ msg = """\
             Opcional de querer el viejo reporte de ater correr:
                 scanntech-operaciones.ater old [EXCEL]
     - Arba
-        scanntech-operaciones.arba [EXCEL] [PADRON TXT]
+        scanntech-operaciones.arba [EXCEL]
     - Citi
         scanntech-operaciones.citi -v o --ventas [CBTE] [ALICUOTAS]
         scanntech-operaciones.citi -d o --delete-ptv [PTV] [CBTE] [ALICUOTAS]

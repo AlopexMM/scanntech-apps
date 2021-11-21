@@ -107,6 +107,8 @@ class NewAter(Base):
 
     def line(self):
         numero_renglon = str(self.id).zfill(5)
+        monto_sujeto_a_percepcion = f"-{self.monto_sujeto_a_percepcion[1:]}"
+        monto_percibido = f"-{self.monto_percibido[1:]}"
         return f"""{numero_renglon},{self.tipo_de_comprobante},{self.letra_comprobante},{self.numero_de_comprobante},{self.cuit_cliente},{self.fecha_percepcion},{self.monto_sujeto_a_percepcion},{self.alicuota},{self.monto_percibido},{self.tipo_de_regimen_de_percepcion},{self.jurisdiccion}\n"""
 
 
@@ -126,7 +128,7 @@ class Ater(object):
         self.alicuota = "003.00"
         self.anulacion = "0"
         self.contribuyente_conv_multi = "0"
-        self.tipo_de_regimen_de_percepcion = "004"
+        self.tipo_de_regimen_de_percepcion = "001"
         self.jurisdiccion = "908"
         engine = create_engine("sqlite+pysqlite:///:memory:")
         Base.metadata.create_all(engine)
@@ -170,13 +172,12 @@ class Ater(object):
         # Carga de excel
         try:
             if len(self.argv) > 2:
-                wb = load_workbook(self.argv[2])
+                wb = load_workbook(self.argv[2], read_only=True)
             else:
-                wb = load_workbook(self.argv[1])
+                wb = load_workbook(self.argv[1], read_only=True)
         except IndexError:
             self.help_app()
             exit()
-
         sheet = wb['0 - Tickets de Clientes con Fac']
         rows = sheet.rows
         next(rows)

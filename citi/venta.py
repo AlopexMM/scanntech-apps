@@ -234,13 +234,20 @@ class Venta:
                         c.otros_tributos,
                         c.fecha_de_vencimiento_de_pago])
                 ws2 = wb.create_sheet(title="Alicuotas")
+                    # TODO Agregar los siguientes campos "Total fact gravado 10.5","total fact gravado 21", "total alicuota fact 10.5" y "total alicuota fact 21" 
+
                 ws2.append([
                         "tipo_de_comprobante",
                         "punto_de_venta",
                         "numero_de_comprobante",
                         "importe_neto_gravado",
                         "alicuota_de_iva",
-                        "impuesto_liquidado"])
+                        "impuesto_liquidado",
+                        "total_fact_gravado_105",
+                        "total_fact_gravado_21",
+                        "total_alicuota_fact_105",
+                        "total_alicuota_fact_21"
+                ])
                 for a in data_a:
                     ws2.append([
                         a.tipo_de_comprobante,
