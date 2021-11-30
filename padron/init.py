@@ -21,6 +21,8 @@ class Padron(object):
         for file in self.argv:
             print(f"Procesando {file}")
             with open(file,mode="r",encoding="latin-1") as f:
+                total_size = len(f.readlines())
+                count = 0
                 for line in f.readlines():
                     line = line.replace("\n","")
                     if len(line) == 52:
@@ -31,6 +33,9 @@ class Padron(object):
                         l = line.split(";")
                         lf = f"P;{l[1]};{l[2]};{l[3]};{l[4]};{l[5]};{l[6]};{l[7]};{l[8]};{l[9]};1\n"
                         self._export(lf)
+                    count += 1
+                    progress = (count * 100) // total_size
+                    print(f"[{progress}%]\r")
         print("Se procesaron los padrones se va a exportar el reporte final")
         print(f"Se gravo el archivo {self.file}")
 
