@@ -35,6 +35,7 @@ from sqlalchemy.orm import declarative_base, Session
 
 from sqlalchemy.sql.expression import null
 
+#import pdb
 Base = declarative_base()
 from typing import Generator
 
@@ -181,8 +182,7 @@ class Ater(object):
         sheet = wb['0 - Tickets de Clientes con Fac']
         rows = sheet.rows
         next(rows)
-        next(rows)
-        next(rows)
+        #pdb.set_trace()
         for row in rows:
             cuit_cliente = ""
             fecha_percepcion = ""
