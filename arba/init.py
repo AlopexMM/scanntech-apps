@@ -65,8 +65,6 @@ class Arba(object):
         sheet = wb['0 - Tickets de Clientes con Fac']
         rows = sheet.rows
         next(rows)
-        next(rows)
-        next(rows)
         for row in rows:
             linea = ""
             cuit = ""
